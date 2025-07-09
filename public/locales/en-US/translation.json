@@ -1,0 +1,16 @@
+{
+  "dashboard": "Dashboard",
+  "bem_vindo": "Welcome back, {{userName}}!",
+  "resumo_financas": "Here is a summary of your finances.",
+  "saldo_mes": "Month Balance",
+  "carregando": "Loading...",
+  "receitas": "Income",
+  "despesas": "Expenses",
+  "metas": "Goals",
+  "ativas": "Active",
+  "transacoes_recentes": "Recent Transactions",
+  "nenhuma_transacao": "No transactions found",
+  "ultimas_movimentacoes": "Your latest financial movements",
+  "nenhuma_transacao_possui": "You don't have any transactions yet",
+  "adicionar_primeira_transacao": "Add your first transaction"
+}

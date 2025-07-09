@@ -1,0 +1,16 @@
+{
+  "dashboard": "Panel",
+  "bem_vindo": "¡Bienvenido de nuevo, {{userName}}!",
+  "resumo_financas": "Aquí tienes un resumen de tus finanzas.",
+  "saldo_mes": "Saldo del Mes",
+  "carregando": "Cargando...",
+  "receitas": "Ingresos",
+  "despesas": "Gastos",
+  "metas": "Metas",
+  "ativas": "Activas",
+  "transacoes_recentes": "Transacciones Recientes",
+  "nenhuma_transacao": "No se encontraron transacciones",
+  "ultimas_movimentacoes": "Tus últimos movimientos financieros",
+  "nenhuma_transacao_possui": "Aún no tienes transacciones",
+  "adicionar_primeira_transacao": "Agrega tu primera transacción"
+}

@@ -39,17 +39,26 @@ export default function CalendarPage() {
       return
     }
 
-    // Carregar transações e metas
-    const savedTransactions = localStorage.getItem("transactions")
+    // Buscar transações da API
+    const fetchTransactions = async () => {
+      const email = localStorage.getItem("userEmail")
+      if (!email) return;
+      try {
+        const res = await fetch("/api/transactions", {
+          headers: { "x-user-email": email }
+        })
+        const data = await res.json()
+        setTransactions(data.transactions || [])
+      } catch (err) {
+        setTransactions([])
+      }
+    }
+
+    fetchTransactions()
+
+    // Buscar metas do localStorage (ou API se preferir)
     const savedGoals = localStorage.getItem("goals")
-
-    if (savedTransactions) {
-      setTransactions(JSON.parse(savedTransactions))
-    }
-
-    if (savedGoals) {
-      setGoals(JSON.parse(savedGoals))
-    }
+    if (savedGoals) setGoals(JSON.parse(savedGoals))
   }, [router])
 
   const getDaysInMonth = (date: Date) => {
@@ -86,7 +95,10 @@ export default function CalendarPage() {
 
   const getTransactionsForDate = (date: Date) => {
     const dateString = date.toISOString().split("T")[0]
-    return transactions.filter((t) => t.date === dateString)
+    return transactions.filter((t) => {
+      const tDate = typeof t.date === "string" ? t.date.split("T")[0] : ""
+      return tDate === dateString
+    })
   }
 
   const getGoalsForDate = (date: Date) => {
@@ -132,43 +144,33 @@ export default function CalendarPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
       {/* Main content */}
       <div className="ml-64">
         <Header title="Calendário Financeiro" setSidebarOpen={setSidebarOpen} />
-
         {/* Main content */}
         <main className="p-4 sm:p-6">
           <div className="grid lg:grid-cols-4 gap-6">
             {/* Calendar */}
             <div className="lg:col-span-3">
-              <Card>
+              <Card className="bg-card text-card-foreground">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-blue-900">
+                    <CardTitle className="text-primary">
                       {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                     </CardTitle>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}>
-                        <ChevronLeft className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
-                        Hoje
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}>
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}> <ChevronLeft className="w-4 h-4" /> </Button>
+                      <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Hoje</Button>
+                      <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}> <ChevronRight className="w-4 h-4" /> </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-7 gap-1 mb-4">
                     {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
-                      <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
-                        {day}
-                      </div>
+                      <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">{day}</div>
                     ))}
                   </div>
                   <div className="grid grid-cols-7 gap-1">
@@ -176,42 +178,46 @@ export default function CalendarPage() {
                       const dayTransactions = getTransactionsForDate(day.date)
                       const dayGoals = getGoalsForDate(day.date)
                       const hasEvents = dayTransactions.length > 0 || dayGoals.length > 0
-
                       return (
                         <div
                           key={index}
                           className={`min-h-[80px] p-2 border rounded-lg cursor-pointer transition-colors ${
                             day.isCurrentMonth
                               ? isToday(day.date)
-                                ? "bg-blue-100 border-blue-300"
+                                ? "bg-primary/10 border-primary"
                                 : hasEvents
-                                  ? "bg-green-50 border-green-200 hover:bg-green-100"
-                                  : "bg-white border-gray-200 hover:bg-gray-50"
-                              : "bg-gray-50 border-gray-100 text-gray-400"
+                                  ? "bg-green-100 dark:bg-green-900/10 border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/20"
+                                  : "bg-card border-border hover:bg-accent"
+                              : "bg-muted border-border text-muted-foreground"
                           }`}
                           onClick={() => setSelectedDate(day.date)}
                         >
                           <div className="text-sm font-medium">{day.date.getDate()}</div>
                           <div className="mt-1 space-y-1">
-                            {dayTransactions.slice(0, 2).map((transaction) => (
+                            {dayTransactions.slice(0, 4).map((transaction) => (
                               <div
                                 key={transaction.id}
-                                className={`text-xs p-1 rounded truncate ${
+                                className={`text-xs p-1 rounded truncate flex items-center gap-1 ${
                                   transaction.type === "income"
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-red-100 text-red-700"
+                                    ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-200"
+                                    : "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-200"
                                 }`}
+                                title={transaction.description}
                               >
-                                {transaction.description}
+                                <span className="truncate max-w-[70px]">{transaction.description}</span>
+                                <span className="font-bold">
+                                  {transaction.type === "income" ? "+" : "-"}R${" "}
+                                  {Number(transaction.amount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                </span>
                               </div>
                             ))}
                             {dayGoals.slice(0, 1).map((goal) => (
-                              <div key={goal.id} className="text-xs p-1 rounded truncate bg-blue-100 text-blue-700">
+                              <div key={goal.id} className="text-xs p-1 rounded truncate bg-primary/10 text-primary">
                                 Meta: {goal.name}
                               </div>
                             ))}
                             {dayTransactions.length + dayGoals.length > 3 && (
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-muted-foreground">
                                 +{dayTransactions.length + dayGoals.length - 3} mais
                               </div>
                             )}
@@ -223,14 +229,13 @@ export default function CalendarPage() {
                 </CardContent>
               </Card>
             </div>
-
             {/* Sidebar with details */}
             <div className="space-y-6">
               {/* Selected Date Details */}
               {selectedDate && (
-                <Card>
+                <Card className="bg-card text-card-foreground">
                   <CardHeader>
-                    <CardTitle className="text-blue-900">
+                    <CardTitle className="text-primary">
                       {selectedDate.toLocaleDateString("pt-BR", {
                         weekday: "long",
                         year: "numeric",
@@ -239,27 +244,31 @@ export default function CalendarPage() {
                       })}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 max-h-80 overflow-y-auto">
                     {getTransactionsForDate(selectedDate).map((transaction) => (
-                      <div key={transaction.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                      <div key={transaction.id} className="flex items-center space-x-3 p-3 border rounded-lg bg-card">
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            transaction.type === "income" ? "bg-green-100" : "bg-red-100"
+                            transaction.type === "income"
+                              ? "bg-green-100 dark:bg-green-900/20"
+                              : "bg-red-100 dark:bg-red-900/20"
                           }`}
                         >
                           {transaction.type === "income" ? (
-                            <ArrowUpRight className="w-4 h-4 text-green-600" />
+                            <ArrowUpRight className="w-4 h-4 text-green-600 dark:text-green-200" />
                           ) : (
-                            <ArrowDownRight className="w-4 h-4 text-red-600" />
+                            <ArrowDownRight className="w-4 h-4 text-red-600 dark:text-red-200" />
                           )}
                         </div>
                         <div className="flex-1">
                           <p className="font-medium text-sm">{transaction.description}</p>
-                          <p className="text-xs text-gray-500">{transaction.category}</p>
+                          <p className="text-xs text-muted-foreground">{transaction.category}</p>
                         </div>
                         <div
                           className={`text-sm font-semibold ${
-                            transaction.type === "income" ? "text-green-600" : "text-red-600"
+                            transaction.type === "income"
+                              ? "text-green-600 dark:text-green-200"
+                              : "text-red-600 dark:text-red-200"
                           }`}
                         >
                           {transaction.type === "income" ? "+" : "-"}R${" "}
@@ -267,35 +276,32 @@ export default function CalendarPage() {
                         </div>
                       </div>
                     ))}
-
                     {getGoalsForDate(selectedDate).map((goal) => (
-                      <div key={goal.id} className="flex items-center space-x-3 p-3 border rounded-lg bg-blue-50">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100">
-                          <Target className="w-4 h-4 text-blue-600" />
+                      <div key={goal.id} className="flex items-center space-x-3 p-3 border rounded-lg bg-primary/10">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/20">
+                          <Target className="w-4 h-4 text-primary" />
                         </div>
                         <div className="flex-1">
                           <p className="font-medium text-sm">Meta: {goal.name}</p>
-                          <p className="text-xs text-gray-500">Prazo final</p>
+                          <p className="text-xs text-muted-foreground">Prazo final</p>
                         </div>
                       </div>
                     ))}
-
                     {getTransactionsForDate(selectedDate).length === 0 &&
                       getGoalsForDate(selectedDate).length === 0 && (
-                        <p className="text-gray-500 text-center py-4">Nenhum evento nesta data</p>
+                        <p className="text-muted-foreground text-center py-4">Nenhum evento nesta data</p>
                       )}
                   </CardContent>
                 </Card>
               )}
-
               {/* Quick Actions */}
-              <Card>
+              <Card className="bg-card text-card-foreground">
                 <CardHeader>
-                  <CardTitle className="text-blue-900">Ações Rápidas</CardTitle>
+                  <CardTitle className="text-primary">Ações Rápidas</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
-                    className="w-full justify-start bg-blue-600 hover:bg-blue-700"
+                    className="w-full justify-start bg-primary hover:bg-primary/90"
                     onClick={() => router.push("/transactions")}
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -311,12 +317,11 @@ export default function CalendarPage() {
                   </Button>
                 </CardContent>
               </Card>
-
               {/* Upcoming Events */}
-              <Card>
+              <Card className="bg-card text-card-foreground">
                 <CardHeader>
-                  <CardTitle className="text-blue-900">Próximos Eventos</CardTitle>
-                  <CardDescription>Metas com prazo próximo</CardDescription>
+                  <CardTitle className="text-primary">Próximos Eventos</CardTitle>
+                  <CardDescription className="text-muted-foreground">Metas com prazo próximo</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {goals
@@ -325,15 +330,15 @@ export default function CalendarPage() {
                     .slice(0, 3)
                     .map((goal) => (
                       <div key={goal.id} className="flex items-center space-x-3 p-2 border-b last:border-b-0">
-                        <Target className="w-4 h-4 text-blue-600" />
+                        <Target className="w-4 h-4 text-primary" />
                         <div className="flex-1">
                           <p className="text-sm font-medium">{goal.name}</p>
-                          <p className="text-xs text-gray-500">{new Date(goal.deadline).toLocaleDateString("pt-BR")}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(goal.deadline).toLocaleDateString("pt-BR")}</p>
                         </div>
                       </div>
                     ))}
                   {goals.filter((goal) => new Date(goal.deadline) > new Date()).length === 0 && (
-                    <p className="text-gray-500 text-sm">Nenhuma meta próxima</p>
+                    <p className="text-muted-foreground text-sm">Nenhuma meta próxima</p>
                   )}
                 </CardContent>
               </Card>

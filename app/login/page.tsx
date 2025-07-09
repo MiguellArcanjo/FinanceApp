@@ -22,30 +22,60 @@ export default function LoginPage() {
   const { toast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!email || !password) {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
-    // Simular autenticação
-    setTimeout(() => {
-      localStorage.setItem("isAuthenticated", "true")
-      localStorage.setItem("userEmail", email)
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast({
+          title: "Erro",
+          description: data.error || "Falha no login",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Salve o token e dados do usuário
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("isAuthenticated", "true");
+
       toast({
         title: "Login realizado com sucesso!",
         description: "Redirecionando para o dashboard...",
-      })
-      router.push("/dashboard")
-    }, 1000)
-  }
+      });
+
+      router.push("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao conectar com o servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
@@ -133,11 +163,6 @@ export default function LoginPage() {
               <Link href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
                 Criar conta gratuita
               </Link>
-            </div>
-
-            <div className="flex items-center justify-center space-x-2 text-xs text-gray-500 mt-6">
-              <Shield className="w-4 h-4" />
-              <span>Protegido por criptografia bancária</span>
             </div>
           </CardContent>
         </Card>

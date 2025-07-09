@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // ou "mysql" ou "sqlite", conforme seu banco
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String        @id @default(uuid())
+  name      String
+  email     String        @unique
+  password  String
+  accounts  BankAccount[]
+  goals     Goal[]
+  transactions Transaction[]
+  notifications Notification[]
+  createdAt DateTime      @default(now())
+  verificationCode     String?
+  verificationExpires  DateTime?
+  resetToken        String?
+  resetTokenExpires DateTime?
+}
+
+model BankAccount {
+  id           String   @id @default(uuid())
+  name         String
+  bank         String
+  type         AccountType
+  balance      Float
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  transactions Transaction[]
+  createdAt    DateTime @default(now())
+}
+
+model Goal {
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  targetAmount Float
+  currentAmount Float
+  deadline     DateTime
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  createdAt    DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  read      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+}
+
+enum AccountType {
+  checking
+  savings
+  credit
+  investment
+}
+
+enum TransactionType {
+  income
+  expense
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  type        TransactionType
+  description String
+  amount      Float
+  date        DateTime
+  category    String
+  account     BankAccount @relation(fields: [accountId], references: [id])
+  accountId   String
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime   @default(now())
+  installmentGroupId String? // Grupo de parcelamento
+  recurrenceGroupId  String? // Grupo de recorrência
+}

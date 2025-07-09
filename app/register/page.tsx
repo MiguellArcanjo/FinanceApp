@@ -36,15 +36,15 @@ export default function RegisterPage() {
   ]
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -52,24 +52,62 @@ export default function RegisterPage() {
         title: "Erro",
         description: "As senhas não coincidem",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
-    // Simular registro
-    setTimeout(() => {
-      localStorage.setItem("isAuthenticated", "true")
-      localStorage.setItem("userEmail", formData.email)
-      localStorage.setItem("userName", formData.name)
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast({
+          title: "Erro",
+          description: data.error || "Falha no cadastro",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Salva o e-mail para uso na verificação
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("userName", data.user.name);
       toast({
         title: "Conta criada com sucesso!",
-        description: "Bem-vindo ao FinanceControl!",
-      })
-      router.push("/dashboard")
-    }, 1000)
-  }
+        description: "Enviamos um código de verificação para seu e-mail.",
+      });
+
+      // Aciona envio do código
+      await fetch("/api/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.user.email }),
+      });
+
+      // Redireciona para tela de verificação
+      router.push("/verify-code");
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao conectar com o servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
@@ -182,20 +220,6 @@ export default function RegisterPage() {
                     <p className="text-xs text-red-500">As senhas não coincidem</p>
                   )}
                 </div>
-
-                <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" className="mt-1" />
-                  <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
-                    Eu concordo com os{" "}
-                    <Link href="/terms" className="text-blue-600 hover:text-blue-700">
-                      Termos de Uso
-                    </Link>{" "}
-                    e{" "}
-                    <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
-                      Política de Privacidade
-                    </Link>
-                  </Label>
-                </div>
               </div>
 
               <Button
@@ -212,11 +236,6 @@ export default function RegisterPage() {
               <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
                 Fazer login
               </Link>
-            </div>
-
-            <div className="flex items-center justify-center space-x-2 text-xs text-gray-500 mt-6">
-              <Shield className="w-4 h-4" />
-              <span>Seus dados estão protegidos com criptografia bancária</span>
             </div>
           </CardContent>
         </Card>
