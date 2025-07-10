@@ -14,6 +14,7 @@ import { Header } from "@/components/header"
 import { Plus, Edit, Trash2, CreditCard, Building2, Wallet, DollarSign, TrendingUp, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { useTranslation } from 'react-i18next';
 
 interface BankAccount {
   id: string
@@ -57,6 +58,7 @@ export default function AccountsPage() {
 
   const router = useRouter()
   const { toast } = useToast()
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Verificar autenticação
@@ -92,25 +94,25 @@ export default function AccountsPage() {
   }, [router])
 
   const accountTypes = [
-    { value: "checking", label: "Conta Corrente", icon: Building2 },
-    { value: "savings", label: "Poupança", icon: Wallet },
-    { value: "credit", label: "Cartão de Crédito", icon: CreditCard },
-    { value: "investment", label: "Investimentos", icon: TrendingUp },
+    { value: "checking", label: t("conta_corrente"), icon: Building2 },
+    { value: "savings", label: t("poupanca"), icon: Wallet },
+    { value: "credit", label: t("cartao_credito"), icon: CreditCard },
+    { value: "investment", label: t("investimentos"), icon: TrendingUp },
   ]
 
   const banks = [
-    "Banco do Brasil",
-    "Bradesco",
-    "Caixa Econômica Federal",
-    "Itaú",
-    "Santander",
-    "Nubank",
-    "Inter",
-    "C6 Bank",
-    "BTG Pactual",
-    "Sicoob",
-    "Sicredi",
-    "Outros",
+    t("banco_brasil"),
+    t("bradesco"),
+    t("caixa"),
+    t("itau"),
+    t("santander"),
+    t("nubank"),
+    t("inter"),
+    t("c6"),
+    t("btg"),
+    t("sicoob"),
+    t("sicredi"),
+    t("outros_bancos")
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,13 +142,13 @@ export default function AccountsPage() {
       if (res.ok) {
         setAccounts((prev) => prev.map((a) => (a.id === editingAccount.id ? data.account : a)))
         toast({
-          title: "Conta atualizada!",
-          description: "A conta foi atualizada com sucesso.",
+          title: t('conta_atualizada'),
+          description: t('conta_atualizada'),
         })
       } else {
         toast({
-          title: "Erro",
-          description: data.error || "Erro ao atualizar conta.",
+          title: t('erro'),
+          description: data.error || t('erro_atualizar_conta'),
           variant: "destructive",
         })
       }
@@ -162,13 +164,13 @@ export default function AccountsPage() {
       if (res.ok) {
         setAccounts((prev) => [data.account, ...prev])
         toast({
-          title: "Conta adicionada!",
-          description: "A conta foi adicionada com sucesso.",
+          title: t('conta_adicionada'),
+          description: t('conta_adicionada'),
         })
       } else {
         toast({
-          title: "Erro",
-          description: data.error || "Erro ao adicionar conta.",
+          title: t('erro'),
+          description: data.error || t('erro_adicionar_conta'),
           variant: "destructive",
         })
       }
@@ -205,13 +207,13 @@ export default function AccountsPage() {
     if (res.ok) {
       setAccounts((prev) => prev.filter((a) => a.id !== id))
       toast({
-        title: "Conta excluída!",
-        description: "A conta foi removida com sucesso.",
+        title: t('conta_excluida'),
+        description: t('conta_excluida'),
       })
     } else {
       toast({
-        title: "Erro",
-        description: data.error || "Erro ao excluir conta.",
+        title: t('erro'),
+        description: data.error || t('erro_excluir_conta'),
         variant: "destructive",
       })
     }
@@ -284,11 +286,10 @@ export default function AccountsPage() {
 
       {/* Main content */}
       <div className="ml-64">
-        <Header title="Contas Bancárias" setSidebarOpen={setSidebarOpen}>
+        <Header title={t('contas_bancarias')} setSidebarOpen={setSidebarOpen}>
           <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Nova Conta</span>
-            <span className="sm:hidden">Nova</span>
+            {t('adicionar_conta')}
           </Button>
         </Header>
 
@@ -307,7 +308,7 @@ export default function AccountsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-primary">Saldo Total</p>
+                        <p className="text-sm font-medium text-primary">{t('saldo_total')}</p>
                         <p className="text-3xl font-bold text-primary">
                           {isLoadingAccounts || isLoadingTransactions ? (
                             <span className="text-base text-muted-foreground">Carregando...</span>
@@ -327,7 +328,7 @@ export default function AccountsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">Contas Ativas</p>
+                        <p className="text-sm font-medium">{t('contas_ativas')}</p>
                         <p className="text-3xl font-bold">{accounts.length}</p>
                       </div>
                       <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
@@ -341,7 +342,7 @@ export default function AccountsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">Bancos</p>
+                        <p className="text-sm font-medium">{t('bancos')}</p>
                         <p className="text-3xl font-bold">{new Set(accounts.map((a) => a.bank)).size}</p>
                       </div>
                       <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
@@ -356,8 +357,8 @@ export default function AccountsPage() {
               {showAddForm && (
                 <Card className="mb-6 border-blue-200">
                   <CardHeader>
-                    <CardTitle className="text-blue-900">
-                      {editingAccount ? "Editar Conta" : "Nova Conta Bancária"}
+                    <CardTitle className="text-primary">
+                      {editingAccount ? t('editar_conta') : t('adicionar_conta')}
                     </CardTitle>
                     <CardDescription>
                       {editingAccount
@@ -369,7 +370,7 @@ export default function AccountsPage() {
                     <form onSubmit={handleSubmit}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="name">Nome da Conta *</Label>
+                          <Label htmlFor="name">{t('nome_conta')} *</Label>
                           <Input
                             id="name"
                             type="text"
@@ -380,13 +381,13 @@ export default function AccountsPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="bank">Banco *</Label>
+                          <Label htmlFor="bank">{t('banco')} *</Label>
                           <Select
                             value={formData.bank}
                             onValueChange={(value) => setFormData({ ...formData, bank: value })}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione o banco" />
+                              <SelectValue placeholder={t('banco')} />
                             </SelectTrigger>
                             <SelectContent>
                               {banks.map((bank) => (
@@ -399,17 +400,18 @@ export default function AccountsPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="type">Tipo de Conta *</Label>
+                          <Label htmlFor="type">{t('tipo_conta')} *</Label>
                           <Select
                             value={formData.type}
                             onValueChange={(value) => setFormData({ ...formData, type: value })}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione o tipo" />
+                              <SelectValue placeholder={t('tipo_conta')} />
                             </SelectTrigger>
                             <SelectContent>
                               {accountTypes.map((type) => (
                                 <SelectItem key={type.value} value={type.value}>
+                                  <type.icon className="w-4 h-4 mr-2 inline" />
                                   {type.label}
                                 </SelectItem>
                               ))}
@@ -433,10 +435,10 @@ export default function AccountsPage() {
                             })
                           }}
                         >
-                          Cancelar
+                          {t('cancelar')}
                         </Button>
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isLoading}>
-                          {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (editingAccount ? "Salvar alterações" : "Adicionar conta")}
+                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={isLoading}>
+                          {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (editingAccount ? t('atualizar') : t('salvar'))}
                         </Button>
                       </div>
                     </form>
@@ -453,7 +455,7 @@ export default function AccountsPage() {
                     <p className="text-gray-500 mb-6">
                       Adicione suas contas bancárias para ter um controle completo das suas finanças
                     </p>
-                    <Button onClick={() => setShowAddForm(true)} className="bg-blue-600 hover:bg-blue-700">
+                    <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
                       <Plus className="w-4 h-4 mr-2" />
                       Adicionar Primeira Conta
                     </Button>
@@ -496,11 +498,11 @@ export default function AccountsPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Tipo:</span>
+                            <Label>{t('tipo_label')}</Label>
                             <Badge variant="secondary">{getAccountTypeLabel(account.type)}</Badge>
                           </div>
                           <div className="text-xs text-gray-500 pt-2 border-t">
-                            Adicionada em {new Date(account.createdAt).toLocaleDateString("pt-BR")}
+                            {t('adicionada_em')} {new Date(account.createdAt).toLocaleDateString("pt-BR")}
                           </div>
                         </CardContent>
                       </Card>
@@ -517,15 +519,15 @@ export default function AccountsPage() {
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent className="max-w-md w-full text-center">
           <DialogHeader>
-            <DialogTitle>Confirmar exclusão</DialogTitle>
+            <DialogTitle>{t('confirmar_exclusao_conta')}</DialogTitle>
           </DialogHeader>
-          <p>Tem certeza que deseja excluir a conta <b>{accountToDelete?.name}</b>?</p>
+          <p>{t('msg_excluir_conta')}</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-              Cancelar
+              {t('cancelar')}
             </Button>
             <Button variant="destructive" onClick={() => accountToDelete && handleDelete(accountToDelete.id)}>
-              Excluir
+              {t('excluir')}
             </Button>
           </DialogFooter>
         </DialogContent>

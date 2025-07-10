@@ -78,6 +78,7 @@ export default function TransactionsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const router = useRouter()
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Verificar autenticação apenas uma vez
@@ -250,16 +251,50 @@ export default function TransactionsPage() {
   // Busca a transação selecionada para exclusão
   const transactionToDelete = transactions.find(t => t.id === deleteId);
 
+  const categoryKeys = {
+    income: [
+      "salario",
+      "freelance",
+      "investimentos",
+      "vendas",
+      "outros"
+    ],
+    expense: [
+      "alimentacao",
+      "transporte",
+      "moradia",
+      "saude",
+      "educacao",
+      "entretenimento",
+      "compras",
+      "outros"
+    ]
+  };
+  const monthKeys = [
+    "mes_janeiro",
+    "mes_fevereiro",
+    "mes_marco",
+    "mes_abril",
+    "mes_maio",
+    "mes_junho",
+    "mes_julho",
+    "mes_agosto",
+    "mes_setembro",
+    "mes_outubro",
+    "mes_novembro",
+    "mes_dezembro"
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Main content */}
       <div className="ml-64">
-        <Header title="Lançamentos" setSidebarOpen={setSidebarOpen}>
+        <Header title={t('lancamentos')} setSidebarOpen={setSidebarOpen}>
           <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Novo Lançamento</span>
-            <span className="sm:hidden">Novo</span>
+            <span className="hidden sm:inline">{t('novo_lancamento')}</span>
+            <span className="sm:hidden">{t('novo')}</span>
           </Button>
         </Header>
         {/* Main content */}
@@ -269,46 +304,44 @@ export default function TransactionsPage() {
             <Card className="mb-6 bg-card text-card-foreground border-primary/20">
               <CardHeader>
                 <CardTitle className="text-primary">
-                  {editingTransaction ? "Editar Lançamento" : "Novo Lançamento"}
+                  {editingTransaction ? t('editar_lancamento') : t('novo_lancamento')}
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  {editingTransaction
-                    ? "Edite os dados da transação"
-                    : "Adicione uma nova receita, despesa ou transferência"}
+                  {editingTransaction ? t('edite_dados_transacao') : t('adicione_nova_transacao')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="type">Tipo *</Label>
+                      <Label htmlFor="type">{t('tipo')} *</Label>
                       <Select
                         value={formData.type}
                         onValueChange={(value) => setFormData({ ...formData, type: value, category: "" })}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo" />
+                          <SelectValue placeholder={t('selecione_tipo')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="income">Receita</SelectItem>
-                          <SelectItem value="expense">Despesa</SelectItem>
+                          <SelectItem value="income">{t('receita')}</SelectItem>
+                          <SelectItem value="expense">{t('despesa')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="category">Categoria *</Label>
+                      <Label htmlFor="category">{t('categoria')} *</Label>
                       {/* Select de categorias fixas */}
                       <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })} disabled={!formData.type}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione a categoria" />
+                          <SelectValue placeholder={t('selecione_categoria')} />
                         </SelectTrigger>
                         <SelectContent>
                           {formData.type && [
-                            ...categories[formData.type as keyof typeof categories].map((c) => ({ key: `${formData.type}-${c}`, value: c })),
+                            ...categoryKeys[formData.type as keyof typeof categoryKeys].map((c) => ({ key: `${formData.type}-${c}`, value: c })),
                           ].map(({ key, value }) => (
                             <SelectItem key={key} value={value}>
-                              {value}
+                              {t(`categoria_${value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -316,7 +349,7 @@ export default function TransactionsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="amount">Valor *</Label>
+                      <Label htmlFor="amount">{t('valor')} *</Label>
                       <Input
                         id="amount"
                         type="number"
@@ -333,7 +366,7 @@ export default function TransactionsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="date">Data *</Label>
+                      <Label htmlFor="date">{t('data')} *</Label>
                       <Input
                         id="date"
                         type="date"
@@ -343,17 +376,17 @@ export default function TransactionsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="account">Conta *</Label>
+                      <Label htmlFor="account">{t('conta')} *</Label>
                       {/* Select de contas reais do usuário */}
                       <Select value={formData.account} onValueChange={(value) => setFormData({ ...formData, account: value })}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione a conta" />
+                          <SelectValue placeholder={t('selecione_conta')} />
                         </SelectTrigger>
                         <SelectContent>
                           {isLoadingAccounts ? (
-                            <SelectItem value="" disabled>Carregando...</SelectItem>
+                            <SelectItem value="" disabled>{t('carregando')}</SelectItem>
                           ) : accounts.length === 0 ? (
-                            <SelectItem value="" disabled>Nenhuma conta encontrada</SelectItem>
+                            <SelectItem value="" disabled>{t('nenhuma_conta_encontrada')}</SelectItem>
                           ) : (
                             accounts.map((account) => (
                               <SelectItem key={account.id} value={account.id}>
@@ -367,10 +400,10 @@ export default function TransactionsPage() {
 
                     {/* Campo de título (antes descrição) */}
                     <div className="space-y-2">
-                      <Label htmlFor="description">Título *</Label>
+                      <Label htmlFor="description">{t('titulo')} *</Label>
                       <Input
                         id="description"
-                        placeholder="Título do lançamento..."
+                        placeholder={t('titulo_lancamento')}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       />
@@ -381,7 +414,7 @@ export default function TransactionsPage() {
                     <div className="space-y-2 col-span-1 md:col-span-2 lg:col-span-3">
                       <div className="flex gap-8 items-center">
                         <div>
-                          <Label htmlFor="isInstallment">É parcelado?</Label>
+                          <Label htmlFor="isInstallment">{t('parcelado')}</Label>
                           <div className="flex items-center gap-4">
                             <Switch
                               id="isInstallment"
@@ -389,11 +422,11 @@ export default function TransactionsPage() {
                               onCheckedChange={(checked) => setFormData({ ...formData, isInstallment: checked, installments: checked ? 2 : 1 })}
                               disabled={formData.isRecurring}
                             />
-                            <span>{formData.isInstallment ? "Sim" : "Não"}</span>
+                            <span>{formData.isInstallment ? t('sim') : t('nao')}</span>
                           </div>
                         </div>
                         <div>
-                          <Label htmlFor="isRecurring">É recorrente?</Label>
+                          <Label htmlFor="isRecurring">{t('recorrente')}</Label>
                           <div className="flex items-center gap-4">
                             <Switch
                               id="isRecurring"
@@ -401,14 +434,14 @@ export default function TransactionsPage() {
                               onCheckedChange={(checked) => setFormData({ ...formData, isRecurring: checked, isInstallment: checked ? false : formData.isInstallment })}
                               disabled={formData.isInstallment}
                             />
-                            <span>{formData.isRecurring ? "Sim" : "Não"}</span>
+                            <span>{formData.isRecurring ? t('sim') : t('nao')}</span>
                           </div>
                         </div>
                       </div>
                       {/* Parcelas só aparece se não for recorrente */}
                       {!formData.isRecurring && (
                         <div className="mt-2">
-                          <Label htmlFor="installments">Quantidade de parcelas</Label>
+                          <Label htmlFor="installments">{t('quantidade_parcelas')}</Label>
                           <Input
                             id="installments"
                             type="number"
@@ -444,10 +477,10 @@ export default function TransactionsPage() {
                         })
                       }}
                     >
-                      Cancelar
+                      {t('cancelar')}
                     </Button>
                     <Button type="submit" className="bg-primary hover:bg-primary/90">
-                      {editingTransaction ? "Atualizar" : "Salvar"} Lançamento
+                      {editingTransaction ? t('atualizar_lancamento') : t('salvar_lancamento')}
                     </Button>
                   </div>
                 </form>
@@ -462,7 +495,7 @@ export default function TransactionsPage() {
                 <div className="col-span-1 md:col-span-4">
                   <div className="relative">
                     <Input
-                      placeholder="Buscar transações..."
+                      placeholder={t('buscar_transacoes')}
                       className="pl-10 bg-background text-foreground border-border h-12"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -473,27 +506,24 @@ export default function TransactionsPage() {
                 <div className="col-span-1 md:col-span-1">
                   <Select value={filterType} onValueChange={setFilterType}>
                     <SelectTrigger className="w-full bg-card text-card-foreground border-border h-12">
-                      <SelectValue placeholder="Tipo" />
+                      <SelectValue placeholder={t('tipo')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Tipo</SelectItem>
-                      <SelectItem value="income">Receitas</SelectItem>
-                      <SelectItem value="expense">Despesas</SelectItem>
+                      <SelectItem value="all">{t('tipo')}</SelectItem>
+                      <SelectItem value="income">{t('receitas')}</SelectItem>
+                      <SelectItem value="expense">{t('despesas')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="col-span-1 md:col-span-1">
                   <Select value={filterCategory} onValueChange={setFilterCategory}>
                     <SelectTrigger className="w-full bg-card text-card-foreground border-border h-12">
-                      <SelectValue placeholder="Categoria" />
+                      <SelectValue placeholder={t('categoria')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Categoria</SelectItem>
-                      {categories.income.map((cat) => (
-                        <SelectItem key={`income-${cat}`} value={cat}>{cat}</SelectItem>
-                      ))}
-                      {categories.expense.map((cat) => (
-                        <SelectItem key={`expense-${cat}`} value={cat}>{cat}</SelectItem>
+                      <SelectItem value="all">{t('categoria')}</SelectItem>
+                      {categoryKeys.income.concat(categoryKeys.expense.filter(c => !categoryKeys.income.includes(c))).map((catKey) => (
+                        <SelectItem key={catKey} value={catKey}>{t(`categoria_${catKey}`)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -501,12 +531,12 @@ export default function TransactionsPage() {
                 <div className="col-span-1 md:col-span-1">
                   <Select value={filterMonth} onValueChange={setFilterMonth}>
                     <SelectTrigger className="w-full bg-card text-card-foreground border-border h-12">
-                      <SelectValue placeholder="Mês" />
+                      <SelectValue placeholder={t('mes')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      {[...Array(12)].map((_, i) => (
-                        <SelectItem key={i + 1} value={(i + 1).toString()}>{new Date(0, i).toLocaleString('pt-BR', { month: 'long' })}</SelectItem>
+                      <SelectItem value="all">{t('todos')}</SelectItem>
+                      {monthKeys.map((monthKey, i) => (
+                        <SelectItem key={i + 1} value={(i + 1).toString()}>{t(monthKey)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -519,7 +549,7 @@ export default function TransactionsPage() {
           <Card className="mb-4 border-red-200 bg-red-50 w-full max-w-sm">
             <CardContent className="p-4 flex items-center justify-between">
               <div className="text-left">
-                <p className="text-sm font-medium text-red-600">Total a pagar no mês</p>
+                <p className="text-sm font-medium text-red-600">{t('total_a_pagar_mes')}</p>
                 <p className="text-2xl font-bold text-red-700">
                   R$ {totalAPagarNoMes.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </p>
@@ -531,11 +561,11 @@ export default function TransactionsPage() {
           </Card>
           <Card className="bg-card text-card-foreground">
             <CardHeader>
-              <CardTitle className="text-primary">Histórico de Transações ({filteredTransactions.length})</CardTitle>
+              <CardTitle className="text-primary">{t('historico_transacoes')} ({filteredTransactions.length})</CardTitle>
               <CardDescription>
                 {filteredTransactions.length === 0
-                  ? "Nenhuma transação encontrada"
-                  : `${filteredTransactions.length} transação(ões) encontrada(s)`}
+                  ? t('nenhuma_transacao_encontrada')
+                  : t('transacoes_encontradas', { count: filteredTransactions.length })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -545,10 +575,10 @@ export default function TransactionsPage() {
                 </div>
               ) : filteredTransactions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <p className="text-muted-foreground mb-4">Você ainda não possui transações</p>
+                  <p className="text-muted-foreground mb-4">{t('voce_nao_possui_transacoes')}</p>
                   <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
                     <Plus className="w-4 h-4 mr-2" />
-                    Adicionar Primeira Transação
+                    {t('adicionar_primeira_transacao')}
                   </Button>
                 </div>
               ) : (
@@ -624,10 +654,10 @@ export default function TransactionsPage() {
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Transação criada com sucesso!</DialogTitle>
+            <DialogTitle>{t('transacao_criada_sucesso')}</DialogTitle>
           </DialogHeader>
           <div className="flex justify-end">
-            <Button onClick={() => setShowSuccessModal(false)} className="bg-primary hover:bg-primary/90">OK</Button>
+            <Button onClick={() => setShowSuccessModal(false)} className="bg-primary hover:bg-primary/90">{t('ok')}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -635,17 +665,17 @@ export default function TransactionsPage() {
       <AlertDialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null) }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogTitle>{t('confirmar_exclusao')}</AlertDialogTitle>
             <AlertDialogDescription>
               {transactionToDelete?.recurrenceGroupId
-                ? "Esta transação faz parte de um lançamento recorrente. Todas as recorrências deste grupo serão excluídas."
+                ? t('msg_excluir_recorrente')
                 : transactionToDelete?.installmentGroupId
-                ? "Esta transação faz parte de um lançamento parcelado. Todas as parcelas deste grupo serão excluídas."
-                : "Tem certeza que deseja excluir esta transação? Esta ação não poderá ser desfeita."}
+                ? t('msg_excluir_parcelado')
+                : t('msg_excluir_unica')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteId(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setDeleteId(null)}>{t('cancelar')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 hover:bg-red-700"
               onClick={async () => {
@@ -655,7 +685,7 @@ export default function TransactionsPage() {
                 }
               }}
             >
-              Excluir
+              {t('excluir')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

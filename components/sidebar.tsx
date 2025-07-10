@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, X, BarChart3, Plus, Target, PieChart, Calendar, Settings, LogOut, CreditCard } from "lucide-react"
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   sidebarOpen: boolean
@@ -12,6 +13,7 @@ interface SidebarProps {
 export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
@@ -21,13 +23,13 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   }
 
   const sidebarItems = [
-    { icon: BarChart3, label: "Dashboard", href: "/dashboard" },
-    { icon: Plus, label: "Lançamentos", href: "/transactions" },
-    { icon: CreditCard, label: "Contas Bancárias", href: "/accounts" },
-    { icon: Target, label: "Metas", href: "/goals" },
-    { icon: PieChart, label: "Análises", href: "/analytics" },
-    { icon: Calendar, label: "Calendário", href: "/calendar" },
-    { icon: Settings, label: "Configurações", href: "/settings" },
+    { icon: BarChart3, label: t('menu_dashboard'), href: "/dashboard" },
+    { icon: Plus, label: t('menu_lancamentos'), href: "/transactions" },
+    { icon: CreditCard, label: t('menu_contas_bancarias'), href: "/accounts" },
+    { icon: Target, label: t('menu_metas'), href: "/goals" },
+    { icon: PieChart, label: t('menu_analises'), href: "/analytics" },
+    { icon: Calendar, label: t('menu_calendario'), href: "/calendar" },
+    { icon: Settings, label: t('menu_configuracoes'), href: "/settings" },
   ]
 
   return (
@@ -79,7 +81,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
             onClick={handleLogout}
           >
             <LogOut className="w-5 h-5 mr-3" />
-            Sair
+            {t('menu_sair')}
           </Button>
         </div>
       </div>

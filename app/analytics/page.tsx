@@ -190,30 +190,30 @@ export default function AnalyticsPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="ml-64">
-        <Header title="Relatórios e Análises" setSidebarOpen={setSidebarOpen} />
+        <Header title={t('relatorios_analises')} setSidebarOpen={setSidebarOpen} />
         {/* Main content */}
         <main className="p-4 sm:p-6 space-y-6">
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-full sm:w-48 bg-card text-card-foreground border-border">
-                <SelectValue placeholder="Período" />
+                <SelectValue placeholder={t('periodo')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os períodos</SelectItem>
-                <SelectItem value="30days">Últimos 30 dias</SelectItem>
-                <SelectItem value="month">Este mês</SelectItem>
-                <SelectItem value="year">Este ano</SelectItem>
+                <SelectItem value="all">{t('todos_periodos')}</SelectItem>
+                <SelectItem value="30days">{t('ultimos_30_dias')}</SelectItem>
+                <SelectItem value="month">{t('este_mes')}</SelectItem>
+                <SelectItem value="year">{t('este_ano')}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={analysisType} onValueChange={setAnalysisType}>
               <SelectTrigger className="w-full sm:w-48 bg-card text-card-foreground border-border">
-                <SelectValue placeholder="Tipo de análise" />
+                <SelectValue placeholder={t('tipo_analise')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="overview">Visão Geral</SelectItem>
-                <SelectItem value="categories">Por Categoria</SelectItem>
-                <SelectItem value="monthly">Análise Mensal</SelectItem>
+                <SelectItem value="overview">{t('visao_geral')}</SelectItem>
+                <SelectItem value="categories">{t('por_categoria')}</SelectItem>
+                <SelectItem value="monthly">{t('analise_mensal')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-primary">Saldo</p>
+                        <p className="text-sm font-medium text-primary">{t('saldo')}</p>
                         <p className="text-2xl font-bold text-primary">
                           R$ {balance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                         </p>
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">Receitas</p>
+                        <p className="text-sm font-medium">{t('receitas')}</p>
                         <p className="text-2xl font-bold">R$ {income.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
                       </div>
                       <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
@@ -257,7 +257,7 @@ export default function AnalyticsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">Despesas</p>
+                        <p className="text-sm font-medium">{t('despesas')}</p>
                         <p className="text-2xl font-bold">R$ {expenses.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
                       </div>
                       <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center">
@@ -270,7 +270,7 @@ export default function AnalyticsPage() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">Transações</p>
+                        <p className="text-sm font-medium">{t('transacoes')}</p>
                         <p className="text-2xl font-bold">{filteredTransactions.length}</p>
                       </div>
                       <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
@@ -286,28 +286,28 @@ export default function AnalyticsPage() {
                   {/* Income vs Expenses */}
                   <Card className="bg-card text-card-foreground">
                     <CardHeader>
-                      <CardTitle className="text-primary">Receitas vs Despesas</CardTitle>
-                      <CardDescription className="text-muted-foreground">Comparação entre receitas e despesas no período</CardDescription>
+                      <CardTitle className="text-primary">{t('receitas_vs_despesas')}</CardTitle>
+                      <CardDescription className="text-muted-foreground">{t('comparacao_receitas_despesas_periodo')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         <div>
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-medium text-green-600 dark:text-green-200">Receitas</span>
+                            <span className="text-sm font-medium text-green-600 dark:text-green-200">{t('receitas')}</span>
                             <span className="text-sm font-semibold text-green-600 dark:text-green-200">R$ {income.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                           </div>
                           <Progress value={income > 0 ? 100 : 0} className="h-3 bg-green-100 dark:bg-green-900/20" />
                         </div>
                         <div>
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-medium text-red-600 dark:text-red-200">Despesas</span>
+                            <span className="text-sm font-medium text-red-600 dark:text-red-200">{t('despesas')}</span>
                             <span className="text-sm font-semibold text-red-600 dark:text-red-200">R$ {expenses.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
                           </div>
                           <Progress value={income > 0 ? (expenses / income) * 100 : 0} className="h-3 bg-red-100 dark:bg-red-900/20" />
                         </div>
                         <div className="pt-4 border-t border-border">
                           <div className="flex justify-between items-center">
-                            <span className="font-medium">Resultado:</span>
+                            <span className="font-medium">{t('resultado')}:</span>
                             <span className={`font-bold ${balance >= 0 ? "text-green-600 dark:text-green-200" : "text-red-600 dark:text-red-200"}`}>
                               R$ {balance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                             </span>
@@ -319,8 +319,8 @@ export default function AnalyticsPage() {
                   {/* Top Categories */}
                   <Card className="bg-card text-card-foreground">
                     <CardHeader>
-                      <CardTitle className="text-primary">Principais Categorias de Despesa</CardTitle>
-                      <CardDescription className="text-muted-foreground">Categorias que mais consomem seu orçamento</CardDescription>
+                      <CardTitle className="text-primary">{t('principais_categorias_despesa')}</CardTitle>
+                      <CardDescription className="text-muted-foreground">{t('categorias_mais_consumem_orcamento')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
@@ -335,7 +335,7 @@ export default function AnalyticsPage() {
                             </div>
                             <div className="ml-4 text-right">
                               <p className="text-sm font-semibold text-red-600 dark:text-red-200">R$ {category.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
-                              <p className="text-xs text-muted-foreground">{category.count} transações</p>
+                              <p className="text-xs text-muted-foreground">{category.count} {t('transacoes')}</p>
                             </div>
                           </div>
                         ))}
@@ -350,13 +350,13 @@ export default function AnalyticsPage() {
                   {/* Income Categories */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-green-700">Receitas por Categoria</CardTitle>
-                      <CardDescription>Análise detalhada das suas fontes de receita</CardDescription>
+                      <CardTitle className="text-green-700">{t('receitas_por_categoria')}</CardTitle>
+                      <CardDescription>{t('analise_detalhada_fontes_receita')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {incomeCategories.length === 0 ? (
-                          <p className="text-gray-500 text-center py-8">Nenhuma receita encontrada no período</p>
+                          <p className="text-gray-500 text-center py-8">{t('nenhuma_receita_encontrada_periodo')}</p>
                         ) : (
                           incomeCategories.map((category) => (
                             <div key={category.category} className="p-4 border rounded-lg">
@@ -366,7 +366,7 @@ export default function AnalyticsPage() {
                               </div>
                               <div className="flex justify-between items-center text-sm text-gray-600">
                                 <span>R$ {category.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                                <span>{category.count} transações</span>
+                                <span>{category.count} {t('transacoes')}</span>
                               </div>
                               <Progress value={category.percentage} className="h-2 mt-2" />
                             </div>
@@ -379,13 +379,13 @@ export default function AnalyticsPage() {
                   {/* Expense Categories */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-red-700">Despesas por Categoria</CardTitle>
-                      <CardDescription>Análise detalhada dos seus gastos</CardDescription>
+                      <CardTitle className="text-red-700">{t('despesas_por_categoria')}</CardTitle>
+                      <CardDescription>{t('analise_detalhada_gastos')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {expenseCategories.length === 0 ? (
-                          <p className="text-gray-500 text-center py-8">Nenhuma despesa encontrada no período</p>
+                          <p className="text-gray-500 text-center py-8">{t('nenhuma_despesa_encontrada_periodo')}</p>
                         ) : (
                           expenseCategories.map((category) => (
                             <div key={category.category} className="p-4 border rounded-lg">
@@ -395,7 +395,7 @@ export default function AnalyticsPage() {
                               </div>
                               <div className="flex justify-between items-center text-sm text-gray-600">
                                 <span>R$ {category.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-                                <span>{category.count} transações</span>
+                                <span>{category.count} {t('transacoes')}</span>
                               </div>
                               <Progress value={category.percentage} className="h-2 mt-2" />
                             </div>
@@ -410,12 +410,12 @@ export default function AnalyticsPage() {
               {analysisType === "monthly" && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-blue-900">Análise Mensal</CardTitle>
-                    <CardDescription>Evolução das suas finanças ao longo do tempo</CardDescription>
+                    <CardTitle className="text-blue-900">{t('analise_mensal')}</CardTitle>
+                    <CardDescription>{t('evolucao_financas_tempo')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     {monthlyData.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">Nenhum dado mensal disponível</p>
+                      <p className="text-gray-500 text-center py-8">{t('nenhum_dado_mensal_disponivel')}</p>
                     ) : (
                       <div className="space-y-6">
                         {monthlyData.map((month) => (
@@ -426,24 +426,24 @@ export default function AnalyticsPage() {
                                 variant={month.balance >= 0 ? "default" : "destructive"}
                                 className={month.balance >= 0 ? "bg-green-100 text-green-800" : ""}
                               >
-                                {month.balance >= 0 ? "Positivo" : "Negativo"}
+                                {month.balance >= 0 ? t('positivo') : t('negativo')}
                               </Badge>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="text-center p-3 bg-green-50 rounded-lg">
-                                <p className="text-sm text-green-600 font-medium">Receitas</p>
+                                <p className="text-sm text-green-600 font-medium">{t('receitas')}</p>
                                 <p className="text-lg font-bold text-green-700">
                                   R$ {month.income.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                                 </p>
                               </div>
                               <div className="text-center p-3 bg-red-50 rounded-lg">
-                                <p className="text-sm text-red-600 font-medium">Despesas</p>
+                                <p className="text-sm text-red-600 font-medium">{t('despesas')}</p>
                                 <p className="text-lg font-bold text-red-700">
                                   R$ {month.expenses.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                                 </p>
                               </div>
                               <div className="text-center p-3 bg-blue-50 rounded-lg">
-                                <p className="text-sm text-blue-600 font-medium">Saldo</p>
+                                <p className="text-sm text-blue-600 font-medium">{t('saldo')}</p>
                                 <p
                                   className={`text-lg font-bold ${month.balance >= 0 ? "text-green-700" : "text-red-700"}`}
                                 >
@@ -464,13 +464,13 @@ export default function AnalyticsPage() {
                 <Card>
                   <CardContent className="text-center py-12">
                     <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhuma transação encontrada</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('nenhuma_transacao_encontrada')}</h3>
                     <p className="text-gray-500 mb-6">
-                      Não há transações no período selecionado. Adicione algumas transações para ver as análises.
+                      {t('nao_ha_transacoes_periodo_selecionado_adicione_algumas_transacoes_para_ver_analises')}
                     </p>
                     <Button onClick={() => router.replace("/transactions")} className="bg-blue-600 hover:bg-blue-700">
                       <Plus className="w-4 h-4 mr-2" />
-                      Adicionar Transações
+                      {t('adicionar_transacoes')}
                     </Button>
                   </CardContent>
                 </Card>

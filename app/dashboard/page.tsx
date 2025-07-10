@@ -147,14 +147,14 @@ export default function DashboardPage() {
 
       {/* Main content */}
       <div className="ml-64">
-        <Header title={t('dashboard')} setSidebarOpen={setSidebarOpen} />
+        <Header title={t('dashboard.title')} setSidebarOpen={setSidebarOpen} />
 
         {/* Dashboard content */}
         <main className="p-4 sm:p-6 space-y-6">
           {/* Welcome section */}
           <div className="mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">{t('bem_vindo', { userName })}</h2>
-            <p className="text-muted-foreground">{t('resumo_financas')}</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">{t('dashboard.welcome', { userName })}</h2>
+            <p className="text-muted-foreground">{t('dashboard.summary')}</p>
           </div>
 
           {/* Key metrics */}
@@ -163,10 +163,10 @@ export default function DashboardPage() {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-primary">{t('saldo_mes')}</p>
+                    <p className="text-sm font-medium text-primary">{t('dashboard.balance_month')}</p>
                     <p className="text-2xl sm:text-3xl font-bold text-primary">
                       {isLoadingAccounts ? (
-                        <span className="text-base text-muted-foreground">{t('carregando')}</span>
+                        <span className="text-base text-muted-foreground">{t('dashboard.loading')}</span>
                       ) : (
                         <>R$ {balance.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</>
                       )}
@@ -183,7 +183,7 @@ export default function DashboardPage() {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-green-600">{t('receitas')}</p>
+                    <p className="text-sm font-medium text-green-600">{t('dashboard.income')}</p>
                     <p className="text-2xl sm:text-3xl font-bold text-green-700">
                       R$ {income.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </p>
@@ -199,7 +199,7 @@ export default function DashboardPage() {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-red-600">{t('despesas')}</p>
+                    <p className="text-sm font-medium text-red-600">{t('dashboard.expense')}</p>
                     <p className="text-2xl sm:text-3xl font-bold text-red-700">
                       R$ {expenses.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </p>
@@ -215,9 +215,9 @@ export default function DashboardPage() {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-purple-600">{t('metas')}</p>
+                    <p className="text-sm font-medium text-purple-600">{t('dashboard.goals')}</p>
                     <p className="text-2xl sm:text-3xl font-bold text-purple-700">{goals.filter(g => g.currentAmount < g.targetAmount).length}</p>
-                    <p className="text-xs text-purple-600">{t('ativas')}</p>
+                    <p className="text-xs text-purple-600">{t('dashboard.active')}</p>
                   </div>
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Target className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
@@ -231,11 +231,11 @@ export default function DashboardPage() {
             {/* Recent transactions */}
             <Card className="lg:col-span-2 bg-card text-card-foreground">
               <CardHeader>
-                <CardTitle className="text-primary">{t('transacoes_recentes')}</CardTitle>
+                <CardTitle className="text-primary">{t('dashboard.transactions')}</CardTitle>
                 <CardDescription>
                   {currentMonthTransactions.length === 0
-                    ? t('nenhuma_transacao')
-                    : t('ultimas_movimentacoes')}
+                    ? t('dashboard.no_data')
+                    : t('dashboard.last_movements')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -246,10 +246,10 @@ export default function DashboardPage() {
                 ) : currentMonthTransactions.length === 0 ? (
                   <div className="text-center py-8">
                     <Wallet className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-4">{t('nenhuma_transacao_possui')}</p>
+                    <p className="text-muted-foreground mb-4">{t('dashboard.no_data')}</p>
                     <Button onClick={() => router.push("/transactions")} className="bg-primary hover:bg-primary/90">
                       <Plus className="w-4 h-4 mr-2" />
-                      {t('adicionar_primeira_transacao')}
+                      {t('dashboard.add_first_transaction')}
                     </Button>
                   </div>
                 ) : (
@@ -298,7 +298,7 @@ export default function DashboardPage() {
                         className="w-full bg-transparent border-border text-primary"
                         onClick={() => router.push("/transactions")}
                       >
-                        {t('ver_todas_transacoes')}
+                        {t('dashboard.view_all_transactions')}
                       </Button>
                     </div>
                   </div>
@@ -309,19 +309,19 @@ export default function DashboardPage() {
             {/* Goals progress */}
             <Card className="bg-card text-card-foreground">
               <CardHeader>
-                <CardTitle className="text-primary">{t('metas_financeiras')}</CardTitle>
+                <CardTitle className="text-primary">{t('dashboard.financial_goals')}</CardTitle>
                 <CardDescription>
-                  {goals.length === 0 ? t('nenhuma_meta_definida') : t('progresso_metas')}
+                  {goals.length === 0 ? t('dashboard.no_data') : t('dashboard.goal_progress')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {goals.length === 0 ? (
                   <div className="text-center py-8">
                     <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-4">{t('nenhuma_meta_possui')}</p>
+                    <p className="text-muted-foreground mb-4">{t('dashboard.no_data')}</p>
                     <Button onClick={() => router.push("/goals")} className="bg-primary hover:bg-primary/90">
                       <Target className="w-4 h-4 mr-2" />
-                      {t('criar_primeira_meta')}
+                      {t('dashboard.create_first_goal')}
                     </Button>
                   </div>
                 ) : (
@@ -347,7 +347,7 @@ export default function DashboardPage() {
                     <div className="pt-4 mt-8">
                       <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => router.push("/goals")}> 
                         <Target className="w-4 h-4 mr-2" />
-                        {t('gerenciar_metas')}
+                        {t('dashboard.manage_goals')}
                       </Button>
                     </div>
                   </>
@@ -359,8 +359,8 @@ export default function DashboardPage() {
           {/* Quick actions */}
           <Card className="bg-card text-card-foreground">
             <CardHeader>
-              <CardTitle className="text-primary">{t('acoes_rapidas')}</CardTitle>
-              <CardDescription className="text-muted-foreground">{t('acesso_rapido_funcionalidades')}</CardDescription>
+              <CardTitle className="text-primary">{t('dashboard.quick_actions')}</CardTitle>
+              <CardDescription className="text-muted-foreground">{t('dashboard.quick_access_features')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                   onClick={() => router.push("/transactions?type=income")}
                 >
                   <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                  <span className="text-xs sm:text-sm">{t('nova_receita')}</span>
+                  <span className="text-xs sm:text-sm">{t('dashboard.new_income')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -378,7 +378,7 @@ export default function DashboardPage() {
                   onClick={() => router.push("/transactions?type=expense")}
                 >
                   <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
-                  <span className="text-xs sm:text-sm">{t('nova_despesa')}</span>
+                  <span className="text-xs sm:text-sm">{t('dashboard.new_expense')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -386,7 +386,7 @@ export default function DashboardPage() {
                   onClick={() => router.push("/goals")}
                 >
                   <Target className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-                  <span className="text-xs sm:text-sm">{t('nova_meta')}</span>
+                  <span className="text-xs sm:text-sm">{t('dashboard.new_goal')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -394,7 +394,7 @@ export default function DashboardPage() {
                   onClick={() => router.push("/analytics")}
                 >
                   <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
-                  <span className="text-xs sm:text-sm">{t('relatorios')}</span>
+                  <span className="text-xs sm:text-sm">{t('dashboard.reports')}</span>
                 </Button>
               </div>
             </CardContent>

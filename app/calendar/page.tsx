@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sidebar } from "@/components/sidebar"
@@ -25,6 +26,7 @@ interface Goal {
 }
 
 export default function CalendarPage() {
+  const { t } = useTranslation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -128,27 +130,14 @@ export default function CalendarPage() {
   }
 
   const days = getDaysInMonth(currentDate)
-  const monthNames = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ]
+  const monthNames = t("meses", { returnObjects: true }) as string[];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Main content */}
       <div className="ml-64">
-        <Header title="Calendário Financeiro" setSidebarOpen={setSidebarOpen} />
+        <Header title={t("calendario_financeiro")} setSidebarOpen={setSidebarOpen} />
         {/* Main content */}
         <main className="p-4 sm:p-6">
           <div className="grid lg:grid-cols-4 gap-6">
@@ -162,14 +151,14 @@ export default function CalendarPage() {
                     </CardTitle>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}> <ChevronLeft className="w-4 h-4" /> </Button>
-                      <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Hoje</Button>
+                      <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>{t("hoje")}</Button>
                       <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}> <ChevronRight className="w-4 h-4" /> </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-7 gap-1 mb-4">
-                    {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
+                    {(t("dias_semana", { returnObjects: true }) as string[]).map((day: string) => (
                       <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">{day}</div>
                     ))}
                   </div>
@@ -213,12 +202,12 @@ export default function CalendarPage() {
                             ))}
                             {dayGoals.slice(0, 1).map((goal) => (
                               <div key={goal.id} className="text-xs p-1 rounded truncate bg-primary/10 text-primary">
-                                Meta: {goal.name}
+                                {t("meta_label")} {goal.name}
                               </div>
                             ))}
                             {dayTransactions.length + dayGoals.length > 3 && (
                               <div className="text-xs text-muted-foreground">
-                                +{dayTransactions.length + dayGoals.length - 3} mais
+                                {t("mais_eventos", { count: dayTransactions.length + dayGoals.length - 3 })}
                               </div>
                             )}
                           </div>
@@ -282,14 +271,14 @@ export default function CalendarPage() {
                           <Target className="w-4 h-4 text-primary" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-sm">Meta: {goal.name}</p>
-                          <p className="text-xs text-muted-foreground">Prazo final</p>
+                          <p className="font-medium text-sm">{t("meta_label")} {goal.name}</p>
+                          <p className="text-xs text-muted-foreground">{t("calendar.goal_deadline")}</p>
                         </div>
                       </div>
                     ))}
                     {getTransactionsForDate(selectedDate).length === 0 &&
                       getGoalsForDate(selectedDate).length === 0 && (
-                        <p className="text-muted-foreground text-center py-4">Nenhum evento nesta data</p>
+                        <p className="text-muted-foreground text-center py-4">{t("calendar.no_events_today")}</p>
                       )}
                   </CardContent>
                 </Card>
@@ -297,7 +286,7 @@ export default function CalendarPage() {
               {/* Quick Actions */}
               <Card className="bg-card text-card-foreground">
                 <CardHeader>
-                  <CardTitle className="text-primary">Ações Rápidas</CardTitle>
+                  <CardTitle className="text-primary">{t("calendar.quick_actions")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
@@ -305,7 +294,7 @@ export default function CalendarPage() {
                     onClick={() => router.push("/transactions")}
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Nova Transação
+                    {t("calendar.new_transaction")}
                   </Button>
                   <Button
                     variant="outline"
@@ -313,15 +302,15 @@ export default function CalendarPage() {
                     onClick={() => router.push("/goals")}
                   >
                     <Target className="w-4 h-4 mr-2" />
-                    Nova Meta
+                    {t("calendar.new_goal")}
                   </Button>
                 </CardContent>
               </Card>
               {/* Upcoming Events */}
               <Card className="bg-card text-card-foreground">
                 <CardHeader>
-                  <CardTitle className="text-primary">Próximos Eventos</CardTitle>
-                  <CardDescription className="text-muted-foreground">Metas com prazo próximo</CardDescription>
+                  <CardTitle className="text-primary">{t("calendar.upcoming_events")}</CardTitle>
+                  <CardDescription className="text-muted-foreground">{t("calendar.upcoming_events_description")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {goals
@@ -338,7 +327,7 @@ export default function CalendarPage() {
                       </div>
                     ))}
                   {goals.filter((goal) => new Date(goal.deadline) > new Date()).length === 0 && (
-                    <p className="text-muted-foreground text-sm">Nenhuma meta próxima</p>
+                    <p className="text-muted-foreground text-sm">{t("calendar.no_upcoming_goals")}</p>
                   )}
                 </CardContent>
               </Card>

@@ -74,8 +74,8 @@ export default function GoalsPage() {
 
     if (!formData.name || !formData.targetAmount || !formData.deadline) {
       toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios",
+        title: t('erro'),
+        description: t('erro_preencha_campos'),
         variant: "destructive",
       })
       return
@@ -116,16 +116,16 @@ export default function GoalsPage() {
     if (res.ok && (data as any).goal) {
       if (editingGoal) {
         setGoals((prev) => prev.map((g) => g.id === editingGoal.id ? (data as any).goal : g))
-        toast({ title: "Meta atualizada!", description: "A meta foi atualizada com sucesso." })
+        toast({ title: t('meta_atualizada'), description: t('meta_atualizada') })
       } else {
         setGoals((prev) => [...prev, (data as any).goal])
-        toast({ title: "Meta criada!", description: "A meta foi criada com sucesso." })
+        toast({ title: t('meta_criada'), description: t('meta_criada') })
       }
       setShowAddForm(false)
       setFormData({ name: "", description: "", targetAmount: "", currentAmount: "", deadline: "" })
       setEditingGoal(null)
     } else {
-      toast({ title: "Erro", description: (data as any).error || "Erro ao salvar meta", variant: "destructive" })
+      toast({ title: t('erro'), description: (data as any).error || t('erro_salvar_meta'), variant: "destructive" })
     }
     setIsCreating(false)
   }
@@ -156,9 +156,9 @@ export default function GoalsPage() {
     }
     if (res.ok && (data as any).success) {
       setGoals((prev) => prev.filter((g) => g.id !== id))
-      toast({ title: "Meta excluída!", description: "A meta foi removida com sucesso." })
+      toast({ title: t('meta_excluida'), description: t('meta_excluida') })
     } else {
-      toast({ title: "Erro", description: (data as any).error || "Erro ao excluir meta", variant: "destructive" })
+      toast({ title: t('erro'), description: (data as any).error || t('erro_excluir_meta'), variant: "destructive" })
     }
     setShowDeleteModal(false)
     setGoalToDelete(null)
@@ -180,13 +180,13 @@ export default function GoalsPage() {
     if (res.ok && (data as any).goal) {
       setGoals((prev) => prev.map((g) => g.id === goalId ? (data as any).goal : g))
       toast({
-        title: "Valor adicionado!",
+        title: t('valor_adicionado'),
         description: `R$ ${amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} foi adicionado à meta.`,
       })
     } else {
       toast({
-        title: "Erro",
-        description: (data as any).error || "Erro ao adicionar valor à meta",
+        title: t('erro'),
+        description: (data as any).error || t('erro_adicionar_valor_meta'),
         variant: "destructive",
       })
     }
@@ -197,11 +197,11 @@ export default function GoalsPage() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Main content */}
       <div className="ml-64">
-        <Header title="Metas Financeiras" setSidebarOpen={setSidebarOpen}>
+        <Header title={t('metas_financeiras')} setSidebarOpen={setSidebarOpen}>
           <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Nova Meta</span>
-            <span className="sm:hidden">Nova</span>
+            <span className="hidden sm:inline">{t('nova_meta')}</span>
+            <span className="sm:hidden">{t('nova')}</span>
           </Button>
         </Header>
         {/* Main content */}
@@ -210,18 +210,16 @@ export default function GoalsPage() {
           {showAddForm && (
             <Card className="mb-6 bg-card text-card-foreground border-primary/20">
               <CardHeader>
-                <CardTitle className="text-primary">{editingGoal ? "Editar Meta" : "Nova Meta Financeira"}</CardTitle>
+                <CardTitle className="text-primary">{editingGoal ? t('editar_meta') : t('nova_meta_financeira')}</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  {editingGoal
-                    ? "Edite os dados da sua meta"
-                    : "Defina uma nova meta financeira para alcançar seus objetivos"}
+                  {editingGoal ? t('edite_dados_meta') : t('defina_nova_meta')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Nome da Meta *</Label>
+                      <Label htmlFor="name">{t('nome_meta')} *</Label>
                       <Input
                         id="name"
                         type="text"
@@ -232,7 +230,7 @@ export default function GoalsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="targetAmount">Valor Meta *</Label>
+                      <Label htmlFor="targetAmount">{t('valor_meta')} *</Label>
                       <Input
                         id="targetAmount"
                         type="text"
@@ -243,7 +241,7 @@ export default function GoalsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="currentAmount">Valor Atual</Label>
+                      <Label htmlFor="currentAmount">{t('valor_atual')}</Label>
                       <Input
                         id="currentAmount"
                         type="text"
@@ -254,7 +252,7 @@ export default function GoalsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="deadline">Prazo *</Label>
+                      <Label htmlFor="deadline">{t('data_limite')} *</Label>
                       <Input
                         id="deadline"
                         type="date"
@@ -264,7 +262,7 @@ export default function GoalsPage() {
                     </div>
 
                     <div className="md:col-span-2 space-y-2">
-                      <Label htmlFor="description">Descrição</Label>
+                      <Label htmlFor="description">{t('descricao')}</Label>
                       <Textarea
                         id="description"
                         placeholder="Descreva sua meta e como pretende alcançá-la..."
@@ -284,10 +282,10 @@ export default function GoalsPage() {
                         setFormData({ name: "", description: "", targetAmount: "", currentAmount: "", deadline: "" })
                       }}
                     >
-                      Cancelar
+                      {t('cancelar')}
                     </Button>
                     <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={isCreating}>
-                      {isCreating ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (editingGoal ? "Salvar alterações" : "Criar meta")}
+                      {isCreating ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (editingGoal ? t('atualizar') : t('salvar'))}
                     </Button>
                   </div>
                 </form>
@@ -303,13 +301,13 @@ export default function GoalsPage() {
             <Card className="bg-card text-card-foreground">
               <CardContent className="text-center py-12">
                 <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-card-foreground mb-2">Nenhuma meta definida</h3>
+                <h3 className="text-lg font-semibold text-card-foreground mb-2">{t('nenhuma_meta')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Comece definindo suas metas financeiras para alcançar seus objetivos
+                  {t('comece_definir_metas')}
                 </p>
                 <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
                   <Plus className="w-4 h-4 mr-2" />
-                  Criar Primeira Meta
+                  {t('adicionar_primeira_meta')}
                 </Button>
               </CardContent>
             </Card>
@@ -345,7 +343,7 @@ export default function GoalsPage() {
                     <CardContent className="space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-muted-foreground">Progresso</span>
+                          <span className="text-sm font-medium text-muted-foreground">{t('progresso')}</span>
                           <span className="font-bold text-primary">{progress.toFixed(0)}%</span>
                         </div>
                         <Progress value={Math.min(progress, 100)} className="h-3 transition-all duration-700" />
@@ -356,21 +354,21 @@ export default function GoalsPage() {
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Prazo:</span>
+                          <span className="text-muted-foreground">{t('prazo')}</span>
                           <span
                             className={`font-medium ${daysLeft < 0 ? "text-red-600" : daysLeft < 30 ? "text-orange-600" : "text-card-foreground"}`}
                           >
-                            {daysLeft < 0 ? "Vencido" : `${daysLeft} dias`}
+                            {daysLeft < 0 ? t('vencido') : `${daysLeft} ${t('dias')}`}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Data limite:</span>
+                          <span className="text-muted-foreground">{t('data_limite')}</span>
                           <span className="text-card-foreground">{new Date(goal.deadline).toLocaleDateString("pt-BR")}</span>
                         </div>
                       </div>
                       {!isCompleted && (
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium text-muted-foreground">Adicionar valor</Label>
+                          <Label className="text-sm font-medium text-muted-foreground">{t('adicionar_valor')}</Label>
                           <div className="flex space-x-2">
                             <Input type="number" placeholder="0,00" className="flex-1" id={`add-amount-${goal.id}`} />
                             <Button
@@ -392,8 +390,8 @@ export default function GoalsPage() {
                       )}
                       {isCompleted && (
                         <div className="text-center p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                          <p className="text-green-700 dark:text-green-200 font-semibold">🎉 Meta Concluída!</p>
-                          <p className="text-green-600 dark:text-green-200 text-sm">Parabéns por alcançar seu objetivo!</p>
+                          <p className="text-green-700 dark:text-green-200 font-semibold">🎉 {t('meta_concluida')}</p>
+                          <p className="text-green-600 dark:text-green-200 text-sm">{t('parabens_objetivo')}</p>
                         </div>
                       )}
                     </CardContent>
@@ -408,12 +406,12 @@ export default function GoalsPage() {
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirmar exclusão</DialogTitle>
+            <DialogTitle>{t('confirmar_exclusao_meta')}</DialogTitle>
           </DialogHeader>
-          <p>Tem certeza que deseja excluir esta meta?</p>
+          <p>{t('msg_excluir_meta')}</p>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={() => goalToDelete && handleDelete(goalToDelete.id)}>Excluir</Button>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>{t('cancelar')}</Button>
+            <Button variant="destructive" onClick={() => goalToDelete && handleDelete(goalToDelete.id)}>{t('excluir')}</Button>
           </div>
         </DialogContent>
       </Dialog>

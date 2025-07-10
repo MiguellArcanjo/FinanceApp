@@ -52,6 +52,7 @@ interface AppSettings {
 }
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [settings, setSettings] = useState<AppSettings>({
     notifications: {
@@ -95,8 +96,8 @@ export default function SettingsPage() {
     localStorage.removeItem("userEmail")
     localStorage.removeItem("userName")
     toast({
-      title: "Logout realizado com sucesso!",
-      description: "Até logo!",
+      title: t("settings.logout_success"),
+      description: t("settings.see_you_soon"),
     })
     router.push("/login")
   }
@@ -108,8 +109,8 @@ export default function SettingsPage() {
       i18n.changeLanguage(settings.display.language)
     }
     toast({
-      title: "Configurações salvas com sucesso!",
-      description: "Suas preferências foram atualizadas.",
+      title: t("settings.saved_success"),
+      description: t("settings.preferences_updated"),
       variant: "default",
       duration: 2000
     })
@@ -135,13 +136,13 @@ export default function SettingsPage() {
     URL.revokeObjectURL(url)
 
     toast({
-      title: "Dados exportados!",
-      description: "Seu backup foi baixado com sucesso.",
+      title: t("settings.data_exported"),
+      description: t("settings.backup_downloaded"),
     })
   }
 
   const clearAllData = () => {
-    if (confirm("Tem certeza que deseja apagar todos os dados? Esta ação não pode ser desfeita.")) {
+    if (confirm(t("settings.confirm_clear_data"))) {
       localStorage.removeItem("transactions")
       localStorage.removeItem("goals")
       localStorage.removeItem("bankAccounts")
@@ -150,28 +151,28 @@ export default function SettingsPage() {
       localStorage.removeItem("appSettings")
 
       toast({
-        title: "Dados apagados!",
-        description: "Todos os seus dados foram removidos.",
+        title: t("settings.data_cleared"),
+        description: t("settings.all_data_removed"),
         variant: "destructive",
       })
     }
   }
 
   const sidebarItems = [
-    { icon: BarChart3, label: "Dashboard", href: "/dashboard" },
-    { icon: Plus, label: "Lançamentos", href: "/transactions" },
-    { icon: CreditCard, label: "Contas Bancárias", href: "/accounts" },
-    { icon: Target, label: "Metas", href: "/goals" },
-    { icon: PieChart, label: "Análises", href: "/analytics" },
-    { icon: Calendar, label: "Calendário", href: "/calendar" },
-    { icon: SettingsIcon, label: "Configurações", href: "/settings", active: true },
+    { icon: BarChart3, label: t("dashboard"), href: "/dashboard" },
+    { icon: Plus, label: t("lancamentos"), href: "/transactions" },
+    { icon: CreditCard, label: t("contas_bancarias"), href: "/accounts" },
+    { icon: Target, label: t("metas"), href: "/goals" },
+    { icon: PieChart, label: t("analises"), href: "/analytics" },
+    { icon: Calendar, label: t("calendario"), href: "/calendar" },
+    { icon: SettingsIcon, label: t("configuracoes"), href: "/settings", active: true },
   ]
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="ml-64">
-        <Header title="Configurações" setSidebarOpen={setSidebarOpen} />
+        <Header title={t("configuracoes")} setSidebarOpen={setSidebarOpen} />
         {/* Main content */}
         <main className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
 
@@ -180,14 +181,14 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-primary">
                 <Palette className="w-5 h-5 mr-2" />
-                Aparência e Idioma
+                {t("settings.appearance_language")}
               </CardTitle>
-              <CardDescription className="text-muted-foreground">Personalize a aparência do aplicativo</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("settings.customize_appearance")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="theme">Tema</Label>
+                  <Label htmlFor="theme">{t("settings.theme")}</Label>
                   <Select
                     value={settings.display.theme}
                     onValueChange={(value: "light" | "dark" | "system") => {
@@ -201,15 +202,15 @@ export default function SettingsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="light">Claro</SelectItem>
-                      <SelectItem value="dark">Escuro</SelectItem>
-                      <SelectItem value="system">Sistema</SelectItem>
+                      <SelectItem value="light">{t("settings.theme_light")}</SelectItem>
+                      <SelectItem value="dark">{t("settings.theme_dark")}</SelectItem>
+                      <SelectItem value="system">{t("settings.theme_system")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="language">Idioma</Label>
+                  <Label htmlFor="language">{t("settings.language")}</Label>
                   <Select
                     value={settings.display.language}
                     onValueChange={(value: string) => {
@@ -223,15 +224,15 @@ export default function SettingsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pt-BR">Português</SelectItem>
-                      <SelectItem value="en-US">English</SelectItem>
-                      <SelectItem value="es-ES">Español</SelectItem>
+                      <SelectItem value="pt-BR">{t("settings.lang_pt")}</SelectItem>
+                      <SelectItem value="en-US">{t("settings.lang_en")}</SelectItem>
+                      <SelectItem value="es-ES">{t("settings.lang_es")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="currency">Moeda</Label>
+                  <Label htmlFor="currency">{t("settings.currency")}</Label>
                   <Select
                     value={settings.display.currency}
                     onValueChange={(value) =>
@@ -245,15 +246,15 @@ export default function SettingsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BRL">Real (R$)</SelectItem>
-                      <SelectItem value="USD">Dólar ($)</SelectItem>
-                      <SelectItem value="EUR">Euro (€)</SelectItem>
+                      <SelectItem value="BRL">{t("settings.currency_brl")}</SelectItem>
+                      <SelectItem value="USD">{t("settings.currency_usd")}</SelectItem>
+                      <SelectItem value="EUR">{t("settings.currency_eur")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="dateFormat">Formato de Data</Label>
+                  <Label htmlFor="dateFormat">{t("settings.date_format")}</Label>
                   <Select
                     value={settings.display.dateFormat}
                     onValueChange={(value) =>
@@ -282,30 +283,30 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-primary">
                 <Download className="w-5 h-5 mr-2" />
-                Gerenciamento de Dados
+                {t("settings.data_management")}
               </CardTitle>
-              <CardDescription className="text-muted-foreground">Exporte ou apague seus dados</CardDescription>
+              <CardDescription className="text-muted-foreground">{t("settings.export_or_delete")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
-                  <h4 className="font-medium">Exportar Dados</h4>
-                  <p className="text-sm text-gray-500">Baixe um backup completo dos seus dados</p>
+                  <h4 className="font-medium">{t("settings.export_data")}</h4>
+                  <p className="text-sm text-gray-500">{t("settings.download_backup")}</p>
                 </div>
                 <Button onClick={exportData} variant="outline">
                   <Download className="w-4 h-4 mr-2" />
-                  Exportar
+                  {t("settings.export")}
                 </Button>
               </div>
 
               <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
                 <div>
-                  <h4 className="font-medium text-red-900">Apagar Todos os Dados</h4>
-                  <p className="text-sm text-red-600">Esta ação não pode ser desfeita</p>
+                  <h4 className="font-medium text-red-900">{t("settings.delete_all_data")}</h4>
+                  <p className="text-sm text-red-600">{t("settings.action_irreversible")}</p>
                 </div>
                 <Button onClick={clearAllData} variant="destructive">
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Apagar Tudo
+                  {t("settings.delete_all")}
                 </Button>
               </div>
             </CardContent>
@@ -314,7 +315,7 @@ export default function SettingsPage() {
           {/* Save Settings */}
           <div className="flex justify-end">
             <Button onClick={saveSettings} className="bg-blue-600 hover:bg-blue-700">
-              Salvar Configurações
+              {t("settings.save_settings")}
             </Button>
           </div>
         </main>
