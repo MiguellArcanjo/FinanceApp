@@ -18,6 +18,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Switch } from "@/components/ui/switch"
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from "next-themes";
 
 interface Transaction {
   id: string
@@ -45,6 +46,7 @@ interface BankAccount {
 }
 
 export default function TransactionsPage() {
+  const { setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -88,6 +90,10 @@ export default function TransactionsPage() {
       return
     }
 
+    // Restaurar tema salvo
+    const userTheme = localStorage.getItem("themeBackup") || "light";
+    setTheme(userTheme);
+
     // Buscar contas do backend
     const fetchAccounts = async () => {
       setIsLoadingAccounts(true)
@@ -113,7 +119,7 @@ export default function TransactionsPage() {
       setIsLoadingTransactions(false)
     }
     fetchTransactions()
-  }, [router])
+  }, [router, setTheme])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

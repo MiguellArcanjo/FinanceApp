@@ -15,6 +15,7 @@ import { Plus, Target, Edit, Trash2, DollarSign, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useTranslation } from 'react-i18next';
+import { useTheme } from "next-themes";
 
 interface Goal {
   id: string
@@ -27,6 +28,7 @@ interface Goal {
 }
 
 export default function GoalsPage() {
+  const { setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [goals, setGoals] = useState<Goal[]>([])
@@ -49,6 +51,9 @@ export default function GoalsPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    // Restaurar tema salvo
+    const userTheme = localStorage.getItem("themeBackup") || "light";
+    setTheme(userTheme);
     // Verificar autenticação
     const isAuthenticated = localStorage.getItem("isAuthenticated")
     if (!isAuthenticated) {

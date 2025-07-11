@@ -28,6 +28,7 @@ import {
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import { useTranslation } from 'react-i18next';
+import { useTheme } from "next-themes";
 
 interface Transaction {
   id: string
@@ -47,6 +48,7 @@ interface CategoryAnalysis {
 }
 
 export default function AnalyticsPage() {
+  const { setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [period, setPeriod] = useState("all")
@@ -56,6 +58,9 @@ export default function AnalyticsPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    // Restaurar tema salvo
+    const userTheme = localStorage.getItem("themeBackup") || "light";
+    setTheme(userTheme);
     const isAuthenticated = localStorage.getItem("isAuthenticated")
     if (!isAuthenticated) {
       router.replace("/login")
@@ -73,7 +78,7 @@ export default function AnalyticsPage() {
       setIsLoadingTransactions(false)
     }
     fetchTransactions()
-  }, [router])
+  }, [router, setTheme])
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")

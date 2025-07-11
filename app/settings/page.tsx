@@ -27,6 +27,7 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Sidebar } from "@/components/sidebar"
+import { useThemeContext } from "@/components/theme-client-provider";
 import { useTheme } from "next-themes"
 import { Header } from "@/components/header"
 import { useTranslation } from 'react-i18next';
@@ -102,20 +103,23 @@ export default function SettingsPage() {
     router.push("/login")
   }
 
+  // Função para trocar o tema (apenas atualiza o estado local)
+  const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
+    setSettings((prev) => ({
+      ...prev,
+      display: { ...prev.display, theme: newTheme },
+    }));
+    localStorage.setItem("theme", newTheme);
+    // Não chama setTheme aqui!
+  };
+  // Função para salvar configurações
   const saveSettings = () => {
-    localStorage.setItem("appSettings", JSON.stringify(settings))
-    localStorage.setItem("theme", settings.display.theme) // Adicionado para next-themes
-    setTheme(settings.display.theme)
-    if (i18n) {
-      i18n.changeLanguage(settings.display.language)
-    }
-    toast({
-      title: t("settings.saved_success"),
-      description: t("settings.preferences_updated"),
-      variant: "default",
-      duration: 2000
-    })
-  }
+    localStorage.setItem("appSettings", JSON.stringify(settings));
+    localStorage.setItem("theme", settings.display.theme);
+    localStorage.setItem("themeBackup", settings.display.theme);
+    setTheme(settings.display.theme);
+    toast({ title: "Configurações salvas com sucesso!" });
+  };
 
   const exportData = () => {
     const data = {
@@ -159,6 +163,20 @@ export default function SettingsPage() {
     }
   }
 
+  // Função para salvar configurações
+  const handleSaveSettings = async () => {
+    await fetch("/api/user/theme", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-id": localStorage.getItem("userId") || ""
+      },
+      body: JSON.stringify({ theme: settings.display.theme })
+    });
+    setTheme(settings.display.theme);
+    toast({ title: "Configurações salvas com sucesso!" });
+  };
+
   const sidebarItems = [
     { icon: BarChart3, label: t("dashboard"), href: "/dashboard" },
     { icon: Plus, label: t("lancamentos"), href: "/transactions" },
@@ -193,10 +211,7 @@ export default function SettingsPage() {
                   <Select
                     value={settings.display.theme}
                     onValueChange={(value: "light" | "dark" | "system") => {
-                      setSettings({
-                        ...settings,
-                        display: { ...settings.display, theme: value },
-                      });
+                      handleThemeChange(value);
                     }}
                   >
                     <SelectTrigger>

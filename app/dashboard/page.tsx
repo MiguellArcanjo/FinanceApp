@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslation } from 'react-i18next';
+import { useTheme } from "next-themes";
 
 interface Transaction {
   id: string
@@ -51,6 +52,7 @@ interface BankAccount {
 }
 
 export default function DashboardPage() {
+  const { setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [goals, setGoals] = useState<Goal[]>([])
@@ -69,6 +71,10 @@ export default function DashboardPage() {
       router.push("/login")
       return
     }
+
+    // Restaurar tema salvo
+    const userTheme = localStorage.getItem("themeBackup") || "light";
+    setTheme(userTheme);
 
     // Buscar contas do backend
     const fetchAccounts = async () => {

@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { TrendingUp, Eye, EyeOff, Check } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { ThemeProvider } from "@/components/theme-provider";
 
 const BENEFICIOS = [
   "Acesso total ao sistema",
@@ -39,6 +38,7 @@ const PLANOS = [
 export default function RegisterPage() {
   useEffect(() => {
     document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
   }, []);
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -109,7 +109,6 @@ export default function RegisterPage() {
   // O formulário só terá o botão de pagamento
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
         <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8">
           {/* Card de Registro */}
@@ -221,6 +220,5 @@ export default function RegisterPage() {
           </div>
       </div>
     </div>
-    </ThemeProvider>
   )
 } 

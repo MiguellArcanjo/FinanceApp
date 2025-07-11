@@ -4,9 +4,13 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, TrendingUp, Shield, BarChart3, Target, PieChart, TrendingDown, Menu } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function HomePage() {
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+  }, []);
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (

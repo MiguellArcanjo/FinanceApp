@@ -16,6 +16,9 @@ import { useToast } from "@/hooks/use-toast"
 export default function LoginPage() {
   useEffect(() => {
     document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+    localStorage.setItem("theme", "light");
+    // Não mexa em themeBackup aqui!
   }, []);
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
@@ -61,6 +64,7 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userEmail", data.user.email);
       localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("userId", data.user.id);
       localStorage.setItem("isAuthenticated", "true");
 
       toast({

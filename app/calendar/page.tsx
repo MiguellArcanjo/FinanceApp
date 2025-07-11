@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Target, Plus } from "lucide-react"
+import { useTheme } from "next-themes";
 
 interface Transaction {
   id: string
@@ -33,6 +34,7 @@ export default function CalendarPage() {
   const [goals, setGoals] = useState<Goal[]>([])
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const router = useRouter()
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated")
@@ -40,6 +42,10 @@ export default function CalendarPage() {
       router.push("/login")
       return
     }
+
+    // Restaurar tema salvo
+    const userTheme = localStorage.getItem("themeBackup") || "light";
+    setTheme(userTheme);
 
     // Buscar transações da API
     const fetchTransactions = async () => {
@@ -61,7 +67,7 @@ export default function CalendarPage() {
     // Buscar metas do localStorage (ou API se preferir)
     const savedGoals = localStorage.getItem("goals")
     if (savedGoals) setGoals(JSON.parse(savedGoals))
-  }, [router])
+  }, [router, setTheme])
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()

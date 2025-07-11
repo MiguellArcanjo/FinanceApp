@@ -15,6 +15,7 @@ import { Plus, Edit, Trash2, CreditCard, Building2, Wallet, DollarSign, Trending
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useTranslation } from 'react-i18next';
+import { useTheme } from "next-themes";
 
 interface BankAccount {
   id: string
@@ -38,6 +39,7 @@ interface Transaction {
 }
 
 export default function AccountsPage() {
+  const { setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [accounts, setAccounts] = useState<BankAccount[]>([])
@@ -61,6 +63,9 @@ export default function AccountsPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    // Restaurar tema salvo
+    const userTheme = localStorage.getItem("themeBackup") || "light";
+    setTheme(userTheme);
     // Verificar autenticação
     const isAuthenticated = localStorage.getItem("isAuthenticated")
     if (!isAuthenticated) {

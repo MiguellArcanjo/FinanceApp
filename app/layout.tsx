@@ -10,38 +10,11 @@ export const metadata: Metadata = {
   generator: 'v0.dev',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var settings = localStorage.getItem("appSettings");
-                  var theme = "dark";
-                  if (settings) {
-                    var parsed = JSON.parse(settings);
-                    theme = parsed.display?.theme || "dark";
-                  }
-                  if (theme === "dark" || (theme === "system" && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add("dark");
-                  } else {
-                    document.documentElement.classList.remove("dark");
-                  }
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider>
           <I18nProvider>
             {children}
           </I18nProvider>
@@ -49,5 +22,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

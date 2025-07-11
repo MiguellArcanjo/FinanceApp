@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle, TrendingUp, Menu } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const funcionalidades = [
   "Dashboard financeiro completo",
@@ -19,6 +19,10 @@ const funcionalidades = [
 ]
 
 export default function PlanosPage() {
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+  }, []);
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
