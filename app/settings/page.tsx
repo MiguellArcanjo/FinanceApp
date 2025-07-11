@@ -104,6 +104,7 @@ export default function SettingsPage() {
 
   const saveSettings = () => {
     localStorage.setItem("appSettings", JSON.stringify(settings))
+    localStorage.setItem("theme", settings.display.theme) // Adicionado para next-themes
     setTheme(settings.display.theme)
     if (i18n) {
       i18n.changeLanguage(settings.display.language)
