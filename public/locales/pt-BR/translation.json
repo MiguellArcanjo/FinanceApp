@@ -29,7 +29,8 @@
         "new_income": "Nova receita",
         "new_expense": "Nova despesa",
         "new_goal": "Nova meta",
-        "reports": "Relatórios"
+        "reports": "Relatórios",
+        "active": "Ativas"
     },
     "bem_vindo": "Bem-vindo de volta, {{userName}}!",
     "resumo_financas": "Aqui está um resumo das suas finanças.",
@@ -38,7 +39,7 @@
     "receitas": "Receitas",
     "despesas": "Despesas",
     "metas": "Metas",
-    "ativas": "Ativas",
+    
     "transacoes_recentes": "Transações Recentes",
     "nenhuma_transacao": "Nenhuma transação encontrada",
     "ultimas_movimentacoes": "Suas últimas movimentações financeiras",
