@@ -10,8 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import type { CheckedState } from "@radix-ui/react-checkbox"
 import { TrendingUp, Eye, EyeOff, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 export default function LoginPage() {
   useEffect(() => {
@@ -19,13 +21,24 @@ export default function LoginPage() {
     document.documentElement.classList.add("light");
     localStorage.setItem("theme", "light");
     // Não mexa em themeBackup aqui!
+
+    // Login automático se lembrar de mim
+    const token = localStorage.getItem("token");
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+    if (token && isAuthenticated === "true") {
+      router.replace("/dashboard");
+    }
   }, []);
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const [showResetDialog, setShowResetDialog] = useState(false)
+  const [resetEmail, setResetEmail] = useState("")
+  const [resetLoading, setResetLoading] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,11 +74,19 @@ export default function LoginPage() {
       }
 
       // Salve o token e dados do usuário
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userEmail", data.user.email);
-      localStorage.setItem("userName", data.user.name);
-      localStorage.setItem("userId", data.user.id);
-      localStorage.setItem("isAuthenticated", "true");
+      if (rememberMe) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("isAuthenticated", "true");
+      } else {
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("userEmail", data.user.email);
+        sessionStorage.setItem("userName", data.user.name);
+        sessionStorage.setItem("userId", data.user.id);
+        sessionStorage.setItem("isAuthenticated", "true");
+      }
 
       toast({
         title: "Login realizado com sucesso!",
@@ -145,14 +166,14 @@ export default function LoginPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="remember" />
+                    <Checkbox id="remember" checked={rememberMe} onCheckedChange={(checked: CheckedState) => setRememberMe(checked === true)} />
                     <Label htmlFor="remember" className="text-sm text-gray-600">
                       Lembrar de mim
                     </Label>
                   </div>
-                  <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+                  <button type="button" className="text-sm text-blue-600 hover:text-blue-700" onClick={() => setShowResetDialog(true)}>
                     Esqueceu a senha?
-                  </Link>
+                  </button>
                 </div>
               </div>
 
@@ -168,12 +189,49 @@ export default function LoginPage() {
             <div className="text-center mt-6">
               <span className="text-gray-600">Não tem uma conta? </span>
               <Link href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
-                Criar conta gratuita
+                Criar conta
               </Link>
             </div>
           </CardContent>
         </Card>
       </div>
+      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Redefinir senha</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setResetLoading(true);
+              try {
+                const res = await fetch("/api/send-reset-link", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email: resetEmail })
+                });
+                if (res.ok) {
+                  toast({ title: "Link enviado!", description: "Enviamos um link para redefinir sua senha. Verifique seu e-mail." });
+                  setShowResetDialog(false);
+                  setResetEmail("");
+                } else {
+                  const data = await res.json();
+                  toast({ title: "Erro", description: data.error || "Não foi possível enviar o link.", variant: "destructive" });
+                }
+              } finally {
+                setResetLoading(false);
+              }
+            }}
+            className="space-y-4"
+          >
+            <Label htmlFor="reset-email">E-mail</Label>
+            <Input id="reset-email" type="email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} required autoFocus />
+            <Button type="submit" className="w-full" disabled={resetLoading}>
+              {resetLoading ? "Enviando..." : "Enviar link de redefinição"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

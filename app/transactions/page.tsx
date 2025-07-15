@@ -295,7 +295,7 @@ export default function TransactionsPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Main content */}
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title={t('lancamentos')} setSidebarOpen={setSidebarOpen}>
           <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
@@ -390,9 +390,9 @@ export default function TransactionsPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {isLoadingAccounts ? (
-                            <SelectItem value="" disabled>{t('carregando')}</SelectItem>
+                            <SelectItem value="none" disabled>{t('carregando')}</SelectItem>
                           ) : accounts.length === 0 ? (
-                            <SelectItem value="" disabled>{t('nenhuma_conta_encontrada')}</SelectItem>
+                            <SelectItem value="none" disabled>{t('nenhuma_conta_encontrada')}</SelectItem>
                           ) : (
                             accounts.map((account) => (
                               <SelectItem key={account.id} value={account.id}>

@@ -60,7 +60,7 @@ export default function Profile() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main content */}
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title={t("profile.title")} setSidebarOpen={setSidebarOpen} />
 
         <main className="p-4">

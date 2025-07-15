@@ -32,6 +32,8 @@ import { useTheme } from "next-themes"
 import { Header } from "@/components/header"
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 interface AppSettings {
   notifications: {
@@ -74,6 +76,9 @@ export default function SettingsPage() {
     },
   })
   const { setTheme } = useTheme();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const router = useRouter()
   const { toast } = useToast()
@@ -118,7 +123,8 @@ export default function SettingsPage() {
     localStorage.setItem("theme", settings.display.theme);
     localStorage.setItem("themeBackup", settings.display.theme);
     setTheme(settings.display.theme);
-    toast({ title: "Configurações salvas com sucesso!" });
+    i18n.changeLanguage(settings.display.language); // Adiciona troca de idioma
+    toast({ title: t("settings.saved_successfully") });
   };
 
   const exportData = () => {
@@ -146,22 +152,47 @@ export default function SettingsPage() {
     })
   }
 
-  const clearAllData = () => {
-    if (confirm(t("settings.confirm_clear_data"))) {
-      localStorage.removeItem("transactions")
-      localStorage.removeItem("goals")
-      localStorage.removeItem("bankAccounts")
-      localStorage.removeItem("userProfile")
-      localStorage.removeItem("notifications")
-      localStorage.removeItem("appSettings")
+  const clearAllData = async () => {
+    setShowPasswordModal(true);
+  };
 
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    const email = localStorage.getItem("userEmail") || "";
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    if (res.ok) {
+      // Apaga dados do backend
+      await fetch("/api/delete-user-data", {
+        method: "DELETE",
+        headers: { "x-user-email": email }
+      });
+      // Apaga apenas os dados do usuário, não o usuário
+      localStorage.removeItem("transactions");
+      localStorage.removeItem("goals");
+      localStorage.removeItem("bankAccounts");
+      localStorage.removeItem("userProfile");
+      localStorage.removeItem("notifications");
+      localStorage.removeItem("appSettings");
+      setShowPasswordModal(false);
+      setPassword("");
       toast({
         title: t("settings.data_cleared"),
         description: t("settings.all_data_removed"),
         variant: "destructive",
-      })
+      });
+    } else {
+      toast({
+        title: t("erro"),
+        description: t("Senha incorreta. Tente novamente."),
+        variant: "destructive",
+      });
     }
-  }
+    setIsDeleting(false);
+  };
 
   // Função para salvar configurações
   const handleSaveSettings = async () => {
@@ -190,7 +221,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title={t("configuracoes")} setSidebarOpen={setSidebarOpen} />
         {/* Main content */}
         <main className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
@@ -246,50 +277,6 @@ export default function SettingsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="currency">{t("settings.currency")}</Label>
-                  <Select
-                    value={settings.display.currency}
-                    onValueChange={(value) =>
-                      setSettings({
-                        ...settings,
-                        display: { ...settings.display, currency: value },
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="BRL">{t("settings.currency_brl")}</SelectItem>
-                      <SelectItem value="USD">{t("settings.currency_usd")}</SelectItem>
-                      <SelectItem value="EUR">{t("settings.currency_eur")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dateFormat">{t("settings.date_format")}</Label>
-                  <Select
-                    value={settings.display.dateFormat}
-                    onValueChange={(value) =>
-                      setSettings({
-                        ...settings,
-                        display: { ...settings.display, dateFormat: value },
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                      <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                      <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -304,16 +291,6 @@ export default function SettingsPage() {
               <CardDescription className="text-muted-foreground">{t("settings.export_or_delete")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h4 className="font-medium">{t("settings.export_data")}</h4>
-                  <p className="text-sm text-gray-500">{t("settings.download_backup")}</p>
-                </div>
-                <Button onClick={exportData} variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  {t("settings.export")}
-                </Button>
-              </div>
 
               <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
                 <div>
@@ -336,6 +313,24 @@ export default function SettingsPage() {
           </div>
         </main>
       </div>
+      <Dialog open={showPasswordModal} onOpenChange={setShowPasswordModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("Confirme sua senha para apagar os dados")}</DialogTitle>
+          </DialogHeader>
+          <Input
+            type="password"
+            placeholder={t("Digite sua senha")}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            disabled={isDeleting}
+          />
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setShowPasswordModal(false)} disabled={isDeleting}>{t("cancelar")}</Button>
+            <Button variant="destructive" onClick={handleConfirmDelete} disabled={isDeleting || !password}>{isDeleting ? t("carregando") : t("Confirmar e Apagar")}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

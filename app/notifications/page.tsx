@@ -12,7 +12,7 @@ export default function Notifications() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main content */}
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title="Notificações" setSidebarOpen={setSidebarOpen} />
 
         <main className="p-4">

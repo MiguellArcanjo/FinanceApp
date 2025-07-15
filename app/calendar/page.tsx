@@ -142,7 +142,7 @@ export default function CalendarPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Main content */}
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title={t("calendario_financeiro")} setSidebarOpen={setSidebarOpen} />
         {/* Main content */}
         <main className="p-4 sm:p-6">

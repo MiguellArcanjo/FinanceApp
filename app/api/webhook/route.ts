@@ -72,8 +72,18 @@ export async function POST(req: NextRequest) {
             from: `"Financeiro" <${process.env.GMAIL_USER}>`,
             to: email,
             subject: "Pagamento aprovado!",
-            text: "Seu pagamento foi aprovado com sucesso. Agora você pode acessar sua conta.",
-            html: `<b>Seu pagamento foi aprovado com sucesso!</b><br/>Acesse sua conta em <a href='http://localhost:3000/login'>http://localhost:3000/login</a>`
+            html: `
+              <div style="max-width:440px;margin:40px auto;padding:32px 28px;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0002;font-family:sans-serif;border:2px solid #2563eb;">
+                <h2 style="color:#2563eb;margin-bottom:8px;font-size:1.4rem;font-weight:700;">Pagamento aprovado com sucesso!</h2>
+                <hr style="border:none;border-top:1px solid #e0e7ef;margin:8px 0 18px 0;" />
+                <p style="font-size:1.08rem;color:#334155;">Olá, <b>${name || email}</b>! Seu pagamento foi aprovado e sua conta está ativa.</p>
+                <p style="color:#64748b;font-size:15px;margin:10px 0 22px 0;">Agora você pode acessar o sistema e aproveitar todos os recursos do Organizze FinanceControl.</p>
+                <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/login" style="display:block;text-align:center;margin:32px 0 0 0;">
+                  <span style="display:inline-block;padding:14px 38px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px #2563eb22;transition:background 0.2s;">Acessar minha conta</span>
+                </a>
+                <p style="color:#64748b;font-size:13px;margin-top:28px;text-align:center;">Se você não reconhece este pagamento, entre em contato com nosso suporte.<br/>Obrigado por escolher o Organizze!</p>
+              </div>
+            `
           });
           console.log("E-mail de confirmação enviado para:", email);
         } catch (mailErr) {
@@ -94,6 +104,37 @@ export async function POST(req: NextRequest) {
     }
     default:
       console.log(`Evento não tratado: ${event.type}`);
+  }
+
+  // Envio de e-mail para erro de pagamento
+  if (event.type === "checkout.session.async_payment_failed" || event.type === "payment_intent.payment_failed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const email = session.metadata?.email || session.customer_email;
+    const { name } = session.metadata || {};
+    if (email) {
+      try {
+        await transporter.sendMail({
+          from: `"Financeiro" <${process.env.GMAIL_USER}>`,
+          to: email,
+          subject: "Erro no pagamento - ação necessária",
+          html: `
+            <div style="max-width:440px;margin:40px auto;padding:32px 28px;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0002;font-family:sans-serif;border:2px solid #dc2626;">
+              <h2 style="color:#dc2626;margin-bottom:8px;font-size:1.4rem;font-weight:700;">Houve um erro no seu pagamento</h2>
+              <hr style="border:none;border-top:1px solid #e0e7ef;margin:8px 0 18px 0;" />
+              <p style="font-size:1.08rem;color:#334155;">Olá, <b>${name || email}</b>! Não foi possível processar seu pagamento.</p>
+              <p style="color:#64748b;font-size:15px;margin:10px 0 22px 0;">Clique no botão abaixo para tentar novamente e garantir o acesso ao sistema.</p>
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/register" style="display:block;text-align:center;margin:32px 0 0 0;">
+                <span style="display:inline-block;padding:14px 38px;background:#dc2626;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px #dc262622;transition:background 0.2s;">Tentar novamente</span>
+              </a>
+              <p style="color:#64748b;font-size:13px;margin-top:28px;text-align:center;">Se você não reconhece esta tentativa de pagamento, entre em contato com nosso suporte.<br/>Obrigado por escolher o Organizze!</p>
+            </div>
+          `
+        });
+        console.log("E-mail de erro de pagamento enviado para:", email);
+      } catch (mailErr) {
+        console.error("Erro ao enviar e-mail de erro de pagamento:", mailErr);
+      }
+    }
   }
 
   return NextResponse.json({ received: true });

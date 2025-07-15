@@ -194,7 +194,7 @@ export default function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title={t('relatorios_analises')} setSidebarOpen={setSidebarOpen} />
         {/* Main content */}
         <main className="p-4 sm:p-6 space-y-6">
@@ -471,7 +471,7 @@ export default function AnalyticsPage() {
                     <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('nenhuma_transacao_encontrada')}</h3>
                     <p className="text-gray-500 mb-6">
-                      {t('nao_ha_transacoes_periodo_selecionado_adicione_algumas_transacoes_para_ver_analises')}
+                      {t('nao_ha_transacoes')}
                     </p>
                     <Button onClick={() => router.replace("/transactions")} className="bg-blue-600 hover:bg-blue-700">
                       <Plus className="w-4 h-4 mr-2" />

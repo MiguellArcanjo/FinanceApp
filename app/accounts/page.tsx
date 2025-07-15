@@ -290,7 +290,7 @@ export default function AccountsPage() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main content */}
-      <div className="ml-64">
+      <div className="lg:ml-64">
         <Header title={t('contas_bancarias')} setSidebarOpen={setSidebarOpen}>
           <Button onClick={() => setShowAddForm(true)} className="bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />

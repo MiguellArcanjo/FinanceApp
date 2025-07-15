@@ -43,18 +43,23 @@ export async function POST(req: NextRequest) {
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "Seu código de verificação",
-    text: `Seu código de verificação é: ${code}`,
+    subject: "Confirme seu cadastro - Organizze FinanceControl",
     html: `
-      <div style="max-width:420px;margin:40px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 2px 8px #0001;font-family:sans-serif;border:2px solid #1a237e;">
-        <h2 style="color:#1a237e;margin-bottom:8px;">Código de confirmação</h2>
-        <hr style="border:none;border-top:1px solid #eee;margin:8px 0 16px 0;" />
-        <p>Olá, <b>${userName}</b>! Que bom te ver por aqui!</p>
-        <p>Use o código a seguir para entrar na sua conta FinanceControl.</p>
-        <p style="color:#888;font-size:14px;margin-bottom:24px;">Se não foi você quem solicitou o código, não precisa se preocupar, basta ignorar o e-mail.</p>
-        <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:32px 0 16px 0;">
-          ${code.split('').map(digit => `<div style='border:2px solid #1a237e;border-radius:8px;width:40px;height:48px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:bold;color:#1a237e;background:#f5f7fa;'>${digit}</div>`).join('')}
+      <div style="max-width:440px;margin:40px auto;padding:32px 28px;background:#fff;border-radius:18px;box-shadow:0 4px 24px #0002;font-family:sans-serif;border:2px solid #2563eb;">
+        <div style="text-align:center;margin-bottom:18px;">
+          <span style="font-size:1.7rem;font-weight:700;color:#2563eb;letter-spacing:-1px;">Organizze</span>
         </div>
+        <h2 style="color:#2563eb;margin-bottom:8px;font-size:1.4rem;font-weight:700;">Confirme seu cadastro</h2>
+        <hr style="border:none;border-top:1px solid #e0e7ef;margin:8px 0 18px 0;" />
+        <p style="font-size:1.08rem;color:#334155;">Olá, <b>${userName}</b>! Seja bem-vindo(a) ao <b>Organizze FinanceControl</b>!</p>
+        <p style="color:#64748b;font-size:15px;margin:10px 0 22px 0;">Para ativar sua conta, utilize o código abaixo ou clique no botão para acessar o sistema e finalizar seu cadastro.</p>
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin:32px 0 18px 0;">
+          ${code.split('').map(digit => `<div style='border:2px solid #2563eb;border-radius:10px;width:44px;height:54px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:700;color:#2563eb;background:#f1f5fd;'>${digit}</div>`).join('')}
+        </div>
+        <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/verify-code" style="display:block;text-align:center;margin:24px 0 0 0;">
+          <span style="display:inline-block;padding:14px 38px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px #2563eb22;transition:background 0.2s;">Acessar sistema</span>
+        </a>
+        <p style="color:#64748b;font-size:13px;margin-top:28px;text-align:center;">Se você não solicitou este código, apenas ignore este e-mail.<br/>Dúvidas? Fale com nosso suporte.</p>
       </div>
     `,
   });
