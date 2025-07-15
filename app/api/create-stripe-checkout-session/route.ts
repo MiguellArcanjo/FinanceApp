@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-06-30.basil",
 });
 
-const PRICE_ID_MENSAL = "price_1RlA0yHpX8U2cDcH2apsCTvd";
+const PRICE_ID_MENSAL = "price_1RlAeHHpX8U2cDcHMX24qMZG";
 const PRICE_ID_ANUAL = "price_1RlA6lHpX8U2cDcHsV7u3eTH";
 
 export async function POST(req: NextRequest) {
