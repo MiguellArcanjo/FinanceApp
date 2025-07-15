@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
         },
       ],
       customer_email: email,
-      success_url: "http://localhost:3000/login", // Troque para sua URL real
-      cancel_url: "http://localhost:3000/register", // Troque para sua URL real
+      success_url: "https://www.organizze.space/login", // Troque para sua URL real
+      cancel_url: "https://www.organizze.space/register", // Troque para sua URL real
       metadata: {
         name,
         email,
