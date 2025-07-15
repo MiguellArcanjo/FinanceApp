@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       if (email) {
         try {
           await transporter.sendMail({
-            from: `"Financeiro" <${process.env.GMAIL_USER}>`,
+            from: `"Organizze" <${process.env.GMAIL_USER}>`,
             to: email,
             subject: "Pagamento aprovado!",
             html: `
