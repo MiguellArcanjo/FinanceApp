@@ -22,18 +22,33 @@ export default function LoginPage() {
     localStorage.setItem("theme", "light");
     // Não mexa em themeBackup aqui!
 
-    // Login automático se lembrar de mim
-    const token = localStorage.getItem("token");
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const isAuthenticated = localStorage.getItem("isAuthenticated") || sessionStorage.getItem("isAuthenticated");
+
     if (token && isAuthenticated === "true") {
-      router.replace("/dashboard");
+      fetch("/api/validate-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            router.replace("/dashboard");
+          } else {
+            localStorage.removeItem("token");
+            localStorage.removeItem("isAuthenticated");
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("isAuthenticated");
+          }
+        });
     }
   }, []);
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  // Remover o estado rememberMe
+  // const [rememberMe, setRememberMe] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
   const [showResetDialog, setShowResetDialog] = useState(false)
@@ -73,20 +88,12 @@ export default function LoginPage() {
         return;
       }
 
-      // Salve o token e dados do usuário
-      if (rememberMe) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userEmail", data.user.email);
-        localStorage.setItem("userName", data.user.name);
-        localStorage.setItem("userId", data.user.id);
-        localStorage.setItem("isAuthenticated", "true");
-      } else {
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("userEmail", data.user.email);
-        sessionStorage.setItem("userName", data.user.name);
-        sessionStorage.setItem("userId", data.user.id);
-        sessionStorage.setItem("isAuthenticated", "true");
-      }
+      // Sempre salve no localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("isAuthenticated", "true");
 
       toast({
         title: "Login realizado com sucesso!",
@@ -164,7 +171,8 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                {/* Remover o bloco do checkbox 'Lembrar de mim' */}
+                {/* <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Checkbox id="remember" checked={rememberMe} onCheckedChange={(checked: CheckedState) => setRememberMe(checked === true)} />
                     <Label htmlFor="remember" className="text-sm text-gray-600">
@@ -174,7 +182,7 @@ export default function LoginPage() {
                   <button type="button" className="text-sm text-blue-600 hover:text-blue-700" onClick={() => setShowResetDialog(true)}>
                     Esqueceu a senha?
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <Button

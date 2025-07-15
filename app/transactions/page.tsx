@@ -592,9 +592,10 @@ export default function TransactionsPage() {
                   {filteredTransactions.map((transaction) => (
                     <div
                       key={transaction.id}
-                      className="flex items-center justify-between p-4 rounded-lg border hover:bg-gray-50"
+                      className="flex justify-between items-center bg-white dark:bg-card rounded-lg p-2 sm:p-4 shadow border text-sm"
                     >
-                      <div className="flex items-center space-x-4">
+                      {/* Esquerda: tudo exceto ações */}
+                      <div className="flex items-center space-x-4 flex-1 min-w-0">
                         <div
                           className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                             transaction.type === "income" ? "bg-green-100" : "bg-red-100"
@@ -606,46 +607,31 @@ export default function TransactionsPage() {
                             <ArrowDownRight className="w-6 h-6 text-red-600" />
                           )}
                         </div>
-
-                        <div>
-                          <p className="font-medium text-gray-900">{transaction.description}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{transaction.description}</p>
                           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mt-1">
                             <Badge variant="secondary" className="text-xs w-fit">
                               {transaction.category}
                             </Badge>
-                            <span className="text-sm text-gray-500">{transaction.account}</span>
+                            <span className="text-sm text-gray-500 truncate">{transaction.account}</span>
                           </div>
+                          <p className={`font-semibold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>{transaction.type === "income" ? "+" : "-"}R$ {transaction.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+                          <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString("pt-BR")}</p>
                         </div>
                       </div>
-
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <p
-                            className={`font-semibold ${
-                              transaction.type === "income" ? "text-green-600" : "text-red-600"
-                            }`}
-                          >
-                            {transaction.type === "income" ? "+" : "-"}R${" "}
-                            {transaction.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(transaction.date).toLocaleDateString("pt-BR")}
-                          </p>
-                        </div>
-
-                        <div className="flex space-x-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(transaction)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700"
-                            onClick={() => setDeleteId(transaction.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                      {/* Direita: apenas ações */}
+                      <div className="flex flex-col items-end gap-2 ml-4">
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(transaction)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => setDeleteId(transaction.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}

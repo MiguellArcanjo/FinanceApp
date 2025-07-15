@@ -124,33 +124,8 @@ export default function SettingsPage() {
     localStorage.setItem("themeBackup", settings.display.theme);
     setTheme(settings.display.theme);
     i18n.changeLanguage(settings.display.language); // Adiciona troca de idioma
-    toast({ title: t("settings.saved_successfully") });
+    toast({ title: t("settings.saved_success") });
   };
-
-  const exportData = () => {
-    const data = {
-      transactions: JSON.parse(localStorage.getItem("transactions") || "[]"),
-      goals: JSON.parse(localStorage.getItem("goals") || "[]"),
-      accounts: JSON.parse(localStorage.getItem("bankAccounts") || "[]"),
-      profile: JSON.parse(localStorage.getItem("userProfile") || "{}"),
-      settings: settings,
-    }
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `financecontrol-backup-${new Date().toISOString().split("T")[0]}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-
-    toast({
-      title: t("settings.data_exported"),
-      description: t("settings.backup_downloaded"),
-    })
-  }
 
   const clearAllData = async () => {
     setShowPasswordModal(true);

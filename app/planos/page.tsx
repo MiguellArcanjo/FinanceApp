@@ -120,7 +120,7 @@ export default function PlanosPage() {
             <Card className="w-full max-w-md border-blue-600 border-2 shadow-lg">
               <CardContent className="p-8 text-center">
                 <h2 className="text-2xl font-bold text-blue-900 mb-2">Plano Anual</h2>
-                <div className="text-4xl font-extrabold text-blue-600 mb-2">R$ 15<span className="text-lg font-normal">/mês</span></div>
+                <div className="text-4xl font-extrabold text-blue-600 mb-2">R$ 190<span className="text-lg font-normal"></span></div>
                 <div className="text-blue-600 font-semibold mb-6">Melhor opção</div>
                 <ul className="space-y-3 mb-8 text-left">
                   {funcionalidades.map((f, i) => (

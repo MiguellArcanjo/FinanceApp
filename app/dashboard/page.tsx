@@ -97,7 +97,10 @@ export default function DashboardPage() {
         headers: { "x-user-email": email },
       })
       const data = await res.json()
-      if (res.ok) setTransactions(data.transactions)
+      if (res.ok) {
+        setTransactions(data.transactions)
+        localStorage.setItem("transactions", JSON.stringify(data.transactions)) // Sincroniza transações no localStorage
+      }
       setIsLoadingTransactions(false)
     }
     fetchTransactions()
@@ -109,7 +112,10 @@ export default function DashboardPage() {
         headers: { "x-user-email": email },
       })
       const data = await res.json()
-      if (res.ok) setGoals(data.goals)
+      if (res.ok) {
+        setGoals(data.goals)
+        localStorage.setItem("goals", JSON.stringify(data.goals)) // Sincroniza metas no localStorage
+      }
     }
     fetchGoals()
 
@@ -117,6 +123,9 @@ export default function DashboardPage() {
     const savedUserName = localStorage.getItem("userName") || "Usuário"
     setUserName(savedUserName)
   }, [router])
+
+  // Extrair apenas o primeiro nome
+  const firstName = userName.split(" ")[0]
 
   // Cálculo bruto do mês atual (corrigido para pegar apenas o mês corrente)
   const getCurrentMonthTotals = () => {
@@ -159,7 +168,7 @@ export default function DashboardPage() {
         <main className="p-4 sm:p-6 space-y-6">
           {/* Welcome section */}
           <div className="mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">{t('bem_vindo_dashboard', { userName })}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">{t('bem_vindo_dashboard', { userName: firstName })}</h2>
             <p className="text-muted-foreground">{t('resumo_dashboard')}</p>
           </div>
 
