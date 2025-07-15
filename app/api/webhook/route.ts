@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
                 <h2 style="color:#2563eb;margin-bottom:8px;font-size:1.4rem;font-weight:700;">Pagamento aprovado com sucesso!</h2>
                 <hr style="border:none;border-top:1px solid #e0e7ef;margin:8px 0 18px 0;" />
                 <p style="font-size:1.08rem;color:#334155;">Olá, <b>${name || email}</b>! Seu pagamento foi aprovado e sua conta está ativa.</p>
-                <p style="color:#64748b;font-size:15px;margin:10px 0 22px 0;">Agora você pode acessar o sistema e aproveitar todos os recursos do Organizze FinanceControl.</p>
+                <p style="color:#64748b;font-size:15px;margin:10px 0 22px 0;">Agora você pode acessar o sistema e aproveitar todos os recursos do Organizze.</p>
                 <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/login" style="display:block;text-align:center;margin:32px 0 0 0;">
                   <span style="display:inline-block;padding:14px 38px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px #2563eb22;transition:background 0.2s;">Acessar minha conta</span>
                 </a>
